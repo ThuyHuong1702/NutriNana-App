@@ -1,0 +1,25 @@
+# --- Các thư mục hệ thống & IDE ---
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# --- Mobile App (NodeJS/Expo) ---
+node_modules/
+.expo/
+dist/
+web-build/
+*.log
+
+# --- AI Backend (Python) ---
+__pycache__/
+*.pyc
+venv/
+env/
+.env
+*.env
+
+# --- Khóa bảo mật (Quan trọng) ---
+*.pem
+google-services.json
+GoogleService-Info.plist
