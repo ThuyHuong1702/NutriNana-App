@@ -45,7 +45,7 @@ export default function LoginScreen() {
         .then((userCredential) => {
           // Đăng nhập thành công!
           console.log("Google Sign-In Success:", userCredential.user.email);
-          router.replace('/(tabs)'); // Chuyển vào trang chủ
+          router.replace('/(onboarding)/character'); // Chuyển vào trang chủ
         })
         .catch((error) => {
           console.log("Google Sign-In Error:", error);
@@ -62,8 +62,8 @@ export default function LoginScreen() {
     setLoading(false);
 
     if (result.success) {
-      // Đăng nhập thành công -> Vào thẳng App chính
-      router.replace('/(tabs)'); 
+      // Đăng nhập thành công -> Vào các màn hình (omboarding)
+      router.replace('/(onboarding)/character');
     } else {
       Alert.alert("Lỗi đăng nhập", "Sai email hoặc mật khẩu!");
     }
