@@ -3,14 +3,12 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useState, useRef } from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context'; // Dùng thư viện này chuẩn hơn SafeArea mặc định
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-// 1. CẤU HÌNH KÍCH THƯỚC LINH HOẠT (RESPONSIVE)
+// 1. CẤU HÌNH KÍCH THƯỚC
 const { width, height } = Dimensions.get('window');
-const ITEM_SIZE = width * 0.6; // Tăng lên 60% để nhìn rõ hơn
+const ITEM_SIZE = width * 0.6;
 const SPACING = (width - ITEM_SIZE) / 2;
-
-// Tính toán chiều cao vùng lướt dựa trên màn hình
 const CAROUSEL_HEIGHT = height * 0.55; 
 
 const CHARACTERS = [
@@ -23,13 +21,16 @@ const CHARACTERS = [
 
 export default function CharacterScreen() {
   const router = useRouter();
-  const [selectedId, setSelectedId] = useState(CHARACTERS[0].id);
-  const scrollX = useRef(new Animated.Value(0)).current;
+
+  // Mặc định chọn Chuck
+  const DEFAULT_INDEX = 2; 
+  const [selectedId, setSelectedId] = useState(CHARACTERS[DEFAULT_INDEX].id);
+  const scrollX = useRef(new Animated.Value(DEFAULT_INDEX * ITEM_SIZE)).current;
 
   const handleScrollEnd = (event: any) => {
     const offsetX = event.nativeEvent.contentOffset.x;
     const index = Math.round(offsetX / ITEM_SIZE);
-    if (CHARACTERS[index]) {
+    if (index >= 0 && index < CHARACTERS.length) {
       setSelectedId(CHARACTERS[index].id);
     }
   };
@@ -42,13 +43,12 @@ export default function CharacterScreen() {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
       
-      {/* HEADER */}
       <View style={styles.header}>
-        <Text style={styles.title}>Chọn bạn đồng hành</Text>
-        <Text style={styles.subtitle}>Lướt để chọn nhân vật yêu thích</Text>
+        {/* 👇 Cho phép tiêu đề to lên tối đa 1.5 lần */}
+        <Text style={styles.title} maxFontSizeMultiplier={1.5}>Chọn bạn đồng hành</Text>
+        <Text style={styles.subtitle} maxFontSizeMultiplier={1.3}>Lướt để chọn nhân vật yêu thích</Text>
       </View>
 
-      {/* CAROUSEL */}
       <View style={{ height: CAROUSEL_HEIGHT }}>
         <Animated.FlatList
           data={CHARACTERS}
@@ -57,11 +57,12 @@ export default function CharacterScreen() {
           showsHorizontalScrollIndicator={false}
           snapToInterval={ITEM_SIZE}
           decelerationRate="fast"
-          bounces={false} // Tắt hiệu ứng nảy trên iOS để mượt hơn
-          contentContainerStyle={{ 
-            paddingHorizontal: SPACING,
-            alignItems: 'center' // Căn giữa theo chiều dọc
-          }}
+          bounces={false}
+          initialScrollIndex={DEFAULT_INDEX} 
+          getItemLayout={(data, index) => ({
+            length: ITEM_SIZE, offset: ITEM_SIZE * index, index,
+          })}
+          contentContainerStyle={{ paddingHorizontal: SPACING, alignItems: 'center' }}
           onScroll={Animated.event(
             [{ nativeEvent: { contentOffset: { x: scrollX } } }],
             { useNativeDriver: true }
@@ -69,48 +70,29 @@ export default function CharacterScreen() {
           onMomentumScrollEnd={handleScrollEnd}
           renderItem={({ item, index }) => {
             
-            const inputRange = [
-              (index - 1) * ITEM_SIZE,
-              index * ITEM_SIZE,
-              (index + 1) * ITEM_SIZE,
-            ];
-
-            // 1. Scale: Giảm độ chênh lệch để không bị vỡ layout trên màn nhỏ
-            const scale = scrollX.interpolate({
-              inputRange,
-              outputRange: [0.8, 1, 0.8], 
-              extrapolate: 'clamp',
-            });
-
-            // 2. TranslateY: Tính toán khoảng cách đẩy xuống dựa trên chiều cao thực tế
-            const translateY = scrollX.interpolate({
-              inputRange,
-              outputRange: [CAROUSEL_HEIGHT * 0.1, 0, CAROUSEL_HEIGHT * 0.1], // Đẩy xuống 10% chiều cao vùng chứa
-              extrapolate: 'clamp',
-            });
-
-            const opacity = scrollX.interpolate({
-              inputRange,
-              outputRange: [0.6, 1, 0.6],
-              extrapolate: 'clamp',
-            });
+            const inputRange = [(index - 1) * ITEM_SIZE, index * ITEM_SIZE, (index + 1) * ITEM_SIZE];
+            const scale = scrollX.interpolate({ inputRange, outputRange: [0.8, 1, 0.8], extrapolate: 'clamp' });
+            const translateY = scrollX.interpolate({ inputRange, outputRange: [CAROUSEL_HEIGHT * 0.1, 0, CAROUSEL_HEIGHT * 0.1], extrapolate: 'clamp' });
+            const opacity = scrollX.interpolate({ inputRange, outputRange: [0.6, 1, 0.6], extrapolate: 'clamp' });
 
             return (
               <View style={{ width: ITEM_SIZE, justifyContent: 'center', alignItems: 'center' }}>
-                <Animated.View
-                  style={[
-                    styles.card,
-                    {
-                      transform: [{ scale }, { translateY }],
-                      opacity,
-                    },
-                  ]}
-                >
+                <Animated.View style={[ styles.card, { transform: [{ scale }, { translateY }], opacity } ]}>
+                  
                   <Image source={item.image} style={styles.image} resizeMode="contain" />
+                  
                   <View style={styles.textContainer}>
-                    <Text style={styles.charName}>{item.name}</Text>
-                    <Text style={styles.charDesc}>{item.desc}</Text>
+                    {/* 👇 Giới hạn chữ trong Card tối đa 1.2 lần để không vỡ Card */}
+                    <Text style={styles.charName} maxFontSizeMultiplier={1.2} numberOfLines={1}>
+                      {item.name}
+                    </Text>
+                    
+                    {/* 👇 Giới hạn mô tả, nếu dài quá thì hiện dấu ... */}
+                    <Text style={styles.charDesc} maxFontSizeMultiplier={1.1} numberOfLines={2}>
+                      {item.desc}
+                    </Text>
                   </View>
+
                 </Animated.View>
               </View>
             );
@@ -118,10 +100,10 @@ export default function CharacterScreen() {
         />
       </View>
 
-      {/* FOOTER */}
       <View style={styles.footerContainer}>
         <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
-          <Text style={styles.nextButtonText}>
+          {/* 👇 Giới hạn chữ trong nút bấm */}
+          <Text style={styles.nextButtonText} maxFontSizeMultiplier={1.2}>
             Chọn {CHARACTERS.find(c => c.id === selectedId)?.name}
           </Text>
         </TouchableOpacity>
@@ -139,61 +121,55 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     paddingBottom: 20,
     alignItems: 'center',
+    paddingHorizontal: 20, // Thêm padding ngang để chữ to không sát lề
   },
   title: {
-    fontSize: width * 0.07, // Font size theo chiều rộng màn hình (~28px trên iPhone X)
+    fontSize: width * 0.07,
     fontWeight: 'bold',
     color: '#333',
     textAlign: 'center',
   },
   subtitle: {
-    fontSize: width * 0.04, // ~16px
+    fontSize: width * 0.04,
     color: '#888',
     textAlign: 'center',
     marginTop: 5,
   },
   card: {
-    width: '90%', // Chiếm 90% của ITEM_SIZE
-    height: '85%', // Chiếm 85% chiều cao vùng chứa
+    width: '90%', 
+    height: '85%', 
     backgroundColor: '#FFF9C4',
     borderRadius: 30,
     alignItems: 'center',
-    justifyContent: 'space-between', // Phân bố đều ảnh và chữ
-    padding: 20,
+    // justifyContent: 'space-between', // BỎ dòng này đi
+    padding: 15, // Giảm padding một chút để tiết kiệm diện tích
     borderWidth: 2,
     borderColor: '#fff',
-    
-    // Shadow chuẩn cho cả 2 hệ điều hành
     ...Platform.select({
-      ios: {
-        shadowColor: "#FBC02D",
-        shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.4,
-        shadowRadius: 10,
-      },
-      android: {
-        elevation: 10, // Elevation cao hơn để nổi rõ trên Android
-      }
+      ios: { shadowColor: "#FBC02D", shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.4, shadowRadius: 10 },
+      android: { elevation: 10 }
     })
   },
   image: {
     width: '100%',
-    height: '70%', // Ảnh chiếm 60% chiều cao card
-    marginTop: 10,
+    flex: 1, // 👇 Thay đổi quan trọng: Để ảnh tự co giãn chiếm chỗ trống còn lại
+    marginBottom: 10,
   },
   textContainer: {
     alignItems: 'center',
     paddingBottom: 10,
+    height: '25%', // 👇 Dành riêng 25% chiều cao card cho chữ
+    justifyContent: 'center',
   },
   charName: {
-    fontSize: width * 0.06, // Responsive font
+    fontSize: width * 0.06,
     fontWeight: 'bold',
     color: '#333',
+    marginBottom: 2,
   },
   charDesc: {
     fontSize: width * 0.035,
     color: '#666',
-    marginTop: 5,
     fontStyle: 'italic',
     textAlign: 'center',
   },
@@ -205,20 +181,12 @@ const styles = StyleSheet.create({
   },
   nextButton: {
     backgroundColor: '#FDD835',
-    paddingVertical: height * 0.02, // Padding dọc theo chiều cao màn hình
-    paddingHorizontal: width * 0.2, // Padding ngang rộng hơn
+    paddingVertical: height * 0.02,
+    paddingHorizontal: width * 0.15, // Giảm padding ngang một chút
     borderRadius: 30,
-    
     ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.2,
-        shadowRadius: 5,
-      },
-      android: {
-        elevation: 6,
-      }
+      ios: { shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 5 },
+      android: { elevation: 6 }
     })
   },
   nextButtonText: {

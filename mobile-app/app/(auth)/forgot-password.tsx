@@ -1,19 +1,28 @@
 //app/(auth)/forgot-password.tsx
 import { 
   View, Text, StyleSheet, TextInput, TouchableOpacity, 
-  Image, KeyboardAvoidingView, Platform, ScrollView, Alert, ActivityIndicator 
+  Image, KeyboardAvoidingView, Platform, ScrollView, 
+  Dimensions, StatusBar, Alert, ActivityIndicator 
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import { resetPassword } from '@/src/api/authApi';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+// 1. LẤY KÍCH THƯỚC MÀN HÌNH
+const { width, height } = Dimensions.get('window');
+
+// Tính toán kích thước tương đối
+const LOGO_WIDTH = width * 0.35; // Logo chiếm 35% chiều rộng
+const LOGO_HEIGHT = LOGO_WIDTH * 0.7; 
+const INPUT_HEIGHT = height > 700 ? 55 : 45; // Chiều cao input linh hoạt
 
 export default function ForgotPasswordScreen() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Xử lý gửi mail
   const handleSendMail = async () => {
     if (!email) {
       Alert.alert("Thiếu thông tin", "Vui lòng nhập địa chỉ email của bạn.");
@@ -31,110 +40,129 @@ export default function ForgotPasswordScreen() {
         [{ text: "OK", onPress: () => router.back() }]
       );
     } else {
-      // 👇 Kiểm tra mã lỗi cụ thể để báo tin nhắn tiếng Việt dễ hiểu
       if (result.error.includes("auth/user-not-found")) {
         Alert.alert("Lỗi", "Email này chưa được đăng ký tài khoản nào!");
       } else if (result.error.includes("auth/invalid-email")) {
         Alert.alert("Lỗi", "Định dạng email không hợp lệ!");
       } else {
-        Alert.alert("Lỗi", result.error); // Các lỗi khác
+        Alert.alert("Lỗi", result.error);
       }
     }
   };
 
   return (
-    <KeyboardAvoidingView 
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={{ flex: 1 }}
-    >
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <View style={styles.container}>
-          
-          {/* 1. Nút Quay Lại */}
-          <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-            <Ionicons name="arrow-back" size={24} color="#333" />
-          </TouchableOpacity>
-
-          {/* 2. Logo NutriNana */}
-          <View style={styles.logoContainer}>
-            <Image 
-              source={require('@/assets/images/auth_logo.jpg')} // Nhớ dùng đúng ảnh logo của bạn
-              style={styles.logo} 
-              resizeMode="contain"
-            />
-          </View>
-
-          {/* 3. Nội dung chính */}
-          <View style={styles.formContainer}>
+    <SafeAreaView style={styles.safeArea}>
+      <StatusBar barStyle="dark-content" />
+      <KeyboardAvoidingView 
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}
+      >
+        <ScrollView 
+          contentContainerStyle={styles.scrollContainer}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.container}>
             
-            <Text style={styles.instructionText}>
-              Nhập email để nhận link đặt lại mật khẩu.
-            </Text>
+            {/* Header: Nút Back & Logo */}
+            <View style={styles.headerSection}>
+              <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+                <Ionicons name="arrow-back" size={28} color="#333" />
+              </TouchableOpacity>
 
-            {/* Ô nhập Email */}
-            <Text style={styles.label}>Email</Text>
-            <TextInput 
-              style={styles.input} 
-              placeholder="Nhập email..." 
-              placeholderTextColor="#999"
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-            />
+              <View style={styles.logoContainer}>
+                <Image 
+                  source={require('@/assets/images/auth_logo.jpg')} 
+                  style={styles.logo} 
+                  resizeMode="contain"
+                />
+              </View>
+            </View>
 
-            {/* Nút Gửi Mail */}
-            <TouchableOpacity 
-              style={styles.sendButton} 
-              onPress={handleSendMail}
-              disabled={loading}
-            >
-              {loading ? (
-                <ActivityIndicator color="#333" />
-              ) : (
-                <Text style={styles.sendButtonText}>Gửi mail</Text>
-              )}
-            </TouchableOpacity>
+            {/* Nội dung chính */}
+            <View style={styles.formContainer}>
+              
+              <Text style={styles.instructionText}>
+                Nhập email để nhận link đặt lại mật khẩu.
+              </Text>
 
+              {/* Ô nhập Email */}
+              <Text style={styles.label}>Email</Text>
+              <TextInput 
+                style={styles.input} 
+                placeholder="Nhập email..." 
+                placeholderTextColor="#999"
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+              />
+
+              {/* Nút Gửi Mail */}
+              <TouchableOpacity 
+                style={styles.sendButton} 
+                onPress={handleSendMail}
+                disabled={loading}
+              >
+                {loading ? (
+                  <ActivityIndicator color="#333" />
+                ) : (
+                  <Text style={styles.sendButtonText}>Gửi mail</Text>
+                )}
+              </TouchableOpacity>
+
+            </View>
           </View>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
   scrollContainer: {
     flexGrow: 1,
-    backgroundColor: '#fff',
+    paddingBottom: 20,
   },
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: '#fff',
+    paddingHorizontal: width * 0.05, // Padding ngang 5%
+  },
+  
+  // --- Header ---
+  headerSection: {
+    alignItems: 'center',
+    marginTop: height * 0.02,
+    marginBottom: height * 0.04,
   },
   backButton: {
-    marginTop: 10,
-    marginBottom: 20,
     alignSelf: 'flex-start',
+    padding: 5,
+    marginBottom: 10,
   },
   logoContainer: {
     alignItems: 'center',
-    marginBottom: 30,
+    justifyContent: 'center',
   },
   logo: {
-    width: 150,
-    height: 100,
+    width: LOGO_WIDTH,
+    height: LOGO_HEIGHT,
   },
+
+  // --- Form ---
   formContainer: {
     width: '100%',
-    paddingHorizontal: 10,
   },
   instructionText: {
     fontSize: 16,
-    color: '#333',
+    color: '#666', // Màu chữ xám nhạt hơn chút cho đẹp
     textAlign: 'center',
     marginBottom: 30,
+    paddingHorizontal: 20, // Padding để chữ không bị sát lề quá
+    lineHeight: 22,
   },
   label: {
     fontSize: 16,
@@ -143,25 +171,27 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   input: {
-    backgroundColor: '#F3F0E3', // Màu be nhạt giống thiết kế
+    width: '100%',
+    height: INPUT_HEIGHT,
+    backgroundColor: '#F3F0E3',
     borderRadius: 12,
-    paddingVertical: 12,
     paddingHorizontal: 15,
     borderWidth: 1,
     borderColor: '#E0E0E0',
     fontSize: 16,
+    color: '#333',
     marginBottom: 40,
   },
   sendButton: {
-    backgroundColor: '#FDD835', // Màu vàng chủ đạo
+    backgroundColor: '#FDD835',
     borderRadius: 12,
-    paddingVertical: 15,
+    height: INPUT_HEIGHT + 5,
+    justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+    ...Platform.select({
+      ios: { shadowColor: "#FDD835", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.4, shadowRadius: 5 },
+      android: { elevation: 4 }
+    })
   },
   sendButtonText: {
     fontSize: 18,
