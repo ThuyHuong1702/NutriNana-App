@@ -10,7 +10,7 @@ import { auth } from '@/src/config/firebase';
 const { width } = Dimensions.get('window');
 
 // 👇 Thay IP máy tính của bạn
-const BACKEND_URL = 'http://192.168.1.22:8000'; 
+const BACKEND_URL = 'http://192.168.1.3:8000'; 
 
 export default function PlanScreen() {
   const router = useRouter();

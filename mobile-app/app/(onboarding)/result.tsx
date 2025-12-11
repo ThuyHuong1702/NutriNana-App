@@ -4,12 +4,13 @@ import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import axios from 'axios';
-import { auth } from '@/src/config/firebase';
+import { auth, db } from '@/src/config/firebase';
+import { doc, updateDoc } from 'firebase/firestore'; 
 
 const { width } = Dimensions.get('window');
 
 // 👇 Thay IP máy tính của bạn
-const BACKEND_URL = 'http://192.168.1.22:8000'; 
+const BACKEND_URL = 'http://192.168.1.3:8000';
 
 export default function ResultScreen() {
   const router = useRouter();
@@ -37,9 +38,23 @@ export default function ResultScreen() {
     }
   };
 
-  const handleFinish = () => {
-    // Hoàn tất toàn bộ -> Vào trang chủ
-    router.replace('/(tabs)');
+  const handleFinish = async () => {
+    try {
+      if (auth.currentUser) {
+        // 👇 QUAN TRỌNG: Đánh dấu đã hoàn thành Onboarding
+        await updateDoc(doc(db, 'users', auth.currentUser.uid), {
+          isOnboardingCompleted: true 
+        });
+      }
+      
+      // Chuyển vào trang chủ
+      router.replace('/(tabs)');
+      
+    } catch (error) {
+      console.log("Lỗi cập nhật trạng thái:", error);
+      // Vẫn cho vào trang chủ dù lỗi mạng
+      router.replace('/(tabs)');
+    }
   };
 
   if (loading) {

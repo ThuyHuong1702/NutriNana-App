@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { View, Image, StyleSheet } from 'react-native';
+import { View, Image, StyleSheet, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
@@ -7,41 +7,56 @@ import { auth, db } from '@/src/config/firebase';
 
 export default function Index() {
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
+  const [checking, setChecking] = useState(true);
 
   useEffect(() => {
-    // Lắng nghe trạng thái đăng nhập
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      try {
-        // Thêm một chút độ trễ nhỏ (ví dụ 1.5s) để người dùng kịp nhìn thấy logo 
-        // trước khi chuyển trang (tránh giật màn hình quá nhanh)
-        await new Promise(resolve => setTimeout(resolve, 1500));
+    const checkUser = async () => {
+      // Giữ màn hình chờ 1.5s
+      await new Promise(resolve => setTimeout(resolve, 1500));
 
-        if (user) {
-          // 1. Nếu ĐÃ ĐĂNG NHẬP -> Kiểm tra xem đã làm Onboarding chưa
-          const userDoc = await getDoc(doc(db, 'users', user.uid));
-          
-          if (userDoc.exists() && userDoc.data().isOnboardingCompleted) {
-            router.replace('/(tabs)');
+      const unsubscribe = onAuthStateChanged(auth, async (user) => {
+        try {
+          if (user) {
+            console.log("🔍 Đã tìm thấy User:", user.email);
+            
+            // Kiểm tra Firestore
+            const userDocRef = doc(db, 'users', user.uid);
+            const userDoc = await getDoc(userDocRef);
+
+            if (userDoc.exists()) {
+              const userData = userDoc.data();
+              console.log("📂 Dữ liệu User trong DB:", userData);
+
+              // Kiểm tra cờ
+              if (userData.isOnboardingCompleted === true) {
+                console.log("✅ Đã xong Onboarding -> Vào Trang chủ");
+                router.replace('/(tabs)');
+              } else {
+                console.log("⚠️ Chưa có cờ isOnboardingCompleted (hoặc false) -> Vào Onboarding");
+                router.replace('/(onboarding)/character');
+              }
+            } else {
+              console.log("❌ Không tìm thấy hồ sơ trong Firestore -> Vào Onboarding tạo mới");
+              router.replace('/(onboarding)/character');
+            }
           } else {
-            router.replace('/(onboarding)/character');
+            console.log("👤 Chưa đăng nhập -> Vào Welcome");
+            router.replace('/(auth)/welcome');
           }
-        } else {
-          // 2. Nếu CHƯA ĐĂNG NHẬP -> Ra cổng chào
+        } catch (error) {
+          console.error("Lỗi kiểm tra:", error);
           router.replace('/(auth)/welcome');
+        } finally {
+          setChecking(false);
         }
-      } catch (error) {
-        console.log("Lỗi kiểm tra trạng thái:", error);
-        router.replace('/(auth)/welcome');
-      } finally {
-        setLoading(false);
-      }
-    });
+      });
 
-    return () => unsubscribe();
+      return unsubscribe;
+    };
+
+    checkUser();
   }, []);
 
-  // Màn hình chờ: Giống hệt màn hình Welcome (Con chuối)
   return (
     <View style={styles.container}>
       <Image 
@@ -49,6 +64,7 @@ export default function Index() {
         style={styles.image} 
         resizeMode="contain"
       />
+      <ActivityIndicator style={{marginTop: 20}} color="#FDD835" />
     </View>
   );
 }
