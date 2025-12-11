@@ -16,7 +16,7 @@ Dự án ứng dụng di động hỗ trợ quản lý dinh dưỡng và sức k
 
 |:---:|:---:|
 
-| <img src="./demo-images/welcome.jpg" width="200" /> | <img src="./demo-images/dang\_nhap.jpg" width="200" /> |
+| <img src="./demo-images/welcome.jpg" width="200" /> | <img src="./demo-images/dang_nhap.jpg" width="200" /> |
 
 
 
@@ -26,7 +26,7 @@ Dự án ứng dụng di động hỗ trợ quản lý dinh dưỡng và sức k
 
 |:---:|:---:|:---:|:---:|:---:|
 
-| <img src="./demo-images/gioi\_tinh.jpg" width="160" /> | <img src="./demo-images/tuoi.jpg" width="160" /> | <img src="./demo-images/biet\_danh.jpg" width="160" /> | <img src="./demo-images/muc\_tieu.jpg" width="160" /> | <img src="./demo-images/van\_dong.jpg" width="160" /> |
+| <img src="./demo-images/gioi_tinh.jpg" width="160" /> | <img src="./demo-images/tuoi.jpg" width="160" /> | <img src="./demo-images/biet_danh.jpg" width="160" /> | <img src="./demo-images/muc_tieu.jpg" width="160" /> | <img src="./demo-images/van_dong.jpg" width="160" /> |
 
 
 
@@ -36,7 +36,7 @@ Dự án ứng dụng di động hỗ trợ quản lý dinh dưỡng và sức k
 
 |:---:|:---:|:---:|:---:|
 
-| <img src="./demo-images/trang\_chu.jpg" width="180" /> | <img src="./demo-images/chi\_tiet\_mon.jpg" width="180" /> | <img src="./demo-images/trang\_them\_mon.jpg" width="180" /> | <img src="./demo-images/nhan\_vat.jpg" width="180" /> |
+| <img src="./demo-images/trang_chu.jpg" width="180" /> | <img src="./demo-images/chi_tiet_mon.jpg" width="180" /> | <img src="./demo-images/trang_them_mon.jpg" width="180" /> | <img src="./demo-images/nhan_vat.jpg" width="180" /> |
 
 
 
