@@ -1,50 +1,16 @@
-# Welcome to your Expo app 👋
+## 📸 Giao diện Demo
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+### 1. Màn hình Chào mừng & Đăng nhập
+| Welcome | Đăng nhập |
+|:---:|:---:|
+| <img src="./demo-images/welcome.jpg" width="200" /> | <img src="./demo-images/dang_nhap.jpg" width="200" /> |
 
-## Get started
+### 2. Thiết lập Hồ sơ Cá nhân (Onboarding)
+| Giới tính | Tuổi | Biệt danh | Mục tiêu | Vận động |
+|:---:|:---:|:---:|:---:|:---:|
+| <img src="./demo-images/gioi_tinh.jpg" width="160" /> | <img src="./demo-images/tuoi.jpg" width="160" /> | <img src="./demo-images/biet_danh.jpg" width="160" /> | <img src="./demo-images/muc_tieu.jpg" width="160" /> | <img src="./demo-images/van_dong.jpg" width="160" /> |
 
-1. Install dependencies
-
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+### 3. Tính năng chính
+| Trang chủ | Chi tiết món ăn | Thêm món | Nhân vật |
+|:---:|:---:|:---:|:---:|
+| <img src="./demo-images/trang_chu.jpg" width="180" /> | <img src="./demo-images/chi_tiet_mon.jpg" width="180" /> | <img src="./demo-images/trang_them_mon.jpg" width="180" /> | <img src="./demo-images/nhan_vat.jpg" width="180" /> |
