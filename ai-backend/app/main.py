@@ -24,6 +24,11 @@ if not os.path.exists("app/food_images"):
 
 app.mount("/food_images", StaticFiles(directory="app/food_images"), name="food_images")
 
+# Đảm bảo đường dẫn chính xác (nếu thư mục ảnh nằm cùng cấp với main.py)
+app.mount("/activity_images", StaticFiles(directory="app/activity_images"), name="activity_images")
+
+app.mount("/drink_images", StaticFiles(directory="app/drink_images"), name="drink_images")
+
 # Nhúng Router
 app.include_router(api_router)
 

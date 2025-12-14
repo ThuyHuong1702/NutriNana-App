@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "NutriNana",       
+    "name": "NutriNana",
     "slug": "nutrinana",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -39,7 +39,8 @@
           }
         }
       ],
-      "expo-web-browser"
+      "expo-web-browser",
+      "expo-audio"
     ],
     "experiments": {
       "typedRoutes": true,
