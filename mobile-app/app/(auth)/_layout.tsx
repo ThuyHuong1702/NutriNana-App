@@ -6,7 +6,6 @@ export default function AuthLayout() {
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="welcome" />
       <Stack.Screen name="landing" />
-      {/* Sau này thêm login.tsx và signup.tsx vào đây */}
     </Stack>
   );
 }

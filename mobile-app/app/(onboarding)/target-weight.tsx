@@ -17,7 +17,6 @@ export default function TargetWeightScreen() {
   const [loading, setLoading] = useState(false);
   const [dataLoaded, setDataLoaded] = useState(false);
 
-  // 1. Lấy cân nặng hiện tại từ Firebase để làm mốc ban đầu
   useEffect(() => {
     const fetchUserData = async () => {
       if (auth.currentUser) {
@@ -26,7 +25,7 @@ export default function TargetWeightScreen() {
           const data = userDoc.data();
           if (data.weight) {
             setCurrentWeight(data.weight);
-            setTargetWeight(data.weight); // Mặc định đích = hiện tại
+            setTargetWeight(data.weight); 
           }
         }
       }
@@ -38,23 +37,18 @@ export default function TargetWeightScreen() {
   const handleNext = async () => {
     setLoading(true);
     try {
-      // 1. Chỉ lưu số cân mong muốn vào Firebase
       if (auth.currentUser) {
         await updateDoc(doc(db, 'users', auth.currentUser.uid), {
           targetWeight: targetWeight
         });
       }
       const goalType = params.goal;
-      // 2. Chuyển sang màn hình tiếp theo: Tốc độ giảm cân (Speed)
-      // KHÔNG tính toán gì ở đây cả
       if (goalType === 'maintain') {
-      // Nếu giữ cân -> Bỏ qua màn Speed, đi thẳng đến Plan
       router.push({ 
         pathname: '/(onboarding)/plan', 
-        params: { ...params, targetWeight: targetWeight, weightSpeed: 0 } // Tốc độ = 0
+        params: { ...params, targetWeight: targetWeight, weightSpeed: 0 } 
       } as any);
     } else {
-      // Nếu Tăng hoặc Giảm -> Đi đến màn Speed
       router.push({ 
         pathname: '/(onboarding)/speed', 
         params: { ...params, targetWeight: targetWeight } 
@@ -76,8 +70,7 @@ export default function TargetWeightScreen() {
         <TouchableOpacity onPress={() => router.back()}>
           <Ionicons name="arrow-back" size={24} color="#333" />
         </TouchableOpacity>
-        
-        {/* Progress 6/7 ~ 85% */}
+
         <View style={styles.progressBar}>
           <View style={[styles.progressFill, { width: '85%' }]} />
         </View>
@@ -103,7 +96,6 @@ export default function TargetWeightScreen() {
         </View>
       )}
 
-      {/* 4. Nút Tiếp theo */}
       <TouchableOpacity 
         style={styles.nextButton} 
         onPress={handleNext} 

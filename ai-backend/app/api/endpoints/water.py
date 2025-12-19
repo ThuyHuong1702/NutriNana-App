@@ -11,7 +11,6 @@ router = APIRouter()
 async def get_water_favorites(firebase_uid: str, db=Depends(get_db_connection)):
     cursor = db.cursor(dictionary=True)
     try:
-        # ✅ Dùng FIREBASE_ID như bạn yêu cầu
         cursor.execute("SELECT ID FROM USER_PROFILE WHERE FIREBASE_ID = %s", (firebase_uid,))
         user = cursor.fetchone()
         
@@ -53,7 +52,6 @@ async def get_water_favorites(firebase_uid: str, db=Depends(get_db_connection)):
 async def log_water(req: LogWaterRequest, db=Depends(get_db_connection)):
     cursor = db.cursor(dictionary=True)
     try:
-        # ✅ Dùng FIREBASE_ID như bạn yêu cầu
         cursor.execute("SELECT ID FROM USER_PROFILE WHERE FIREBASE_ID = %s", (req.uid,))
         user = cursor.fetchone()
         if not user:
@@ -71,7 +69,7 @@ async def log_water(req: LogWaterRequest, db=Depends(get_db_connection)):
         true_water_val = water_info['TRUE_WATER']
         actual_water = req.amount_ml * (true_water_val / 100)
 
-        # --- LOGIC THỜI GIAN (Giữ nguyên phần này vì nó quan trọng) ---
+        # --- LOGIC THỜI GIAN ---
         current_time_str = datetime.now().strftime("%H:%M:%S")
         log_timestamp = f"{req.date_str} {current_time_str}" 
 
@@ -91,7 +89,7 @@ async def log_water(req: LogWaterRequest, db=Depends(get_db_connection)):
         cursor.close()
         db.close()
 
-# 3. API Lấy lịch sử uống nước chi tiết trong ngày (MỚI)
+# 3. API Lấy lịch sử uống nước chi tiết trong ngày 
 @router.get("/get-water-logs/{firebase_uid}")
 async def get_water_logs(firebase_uid: str, date_str: str, db=Depends(get_db_connection)):
     cursor = db.cursor(dictionary=True)
@@ -167,21 +165,20 @@ async def get_all_water_types(db=Depends(get_db_connection)):
         cursor.close()
         db.close()
 
-# 6. API Cập nhật mục yêu thích (ĐÃ SỬA)
+# 6. API Cập nhật mục yêu thích
 @router.post("/update-water-favorite")
 async def update_water_favorite(req: UpdateFavoriteRequest, db=Depends(get_db_connection)): 
     # Sử dụng dictionary=True để dễ lấy dữ liệu theo tên cột
     cursor = db.cursor(dictionary=True) 
     try:
         # BƯỚC 1: Lấy USER_ID (INT) từ FIREBASE_ID (String)
-        # req.uid chính là chuỗi 'mnPPe...'
         cursor.execute("SELECT ID FROM USER_PROFILE WHERE FIREBASE_ID = %s", (req.uid,))
         user = cursor.fetchone()
         
         if not user:
             return {"success": False, "message": "User not found with this Firebase UID"}
             
-        user_id = user['ID'] # Đây mới là số ID nội bộ (ví dụ: 1, 2, 10...)
+        user_id = user['ID'] 
 
         # BƯỚC 2: Thực hiện Update dùng user_id vừa tìm được
         query = """
@@ -189,14 +186,12 @@ async def update_water_favorite(req: UpdateFavoriteRequest, db=Depends(get_db_co
             SET W_ID = %s, DEFAULT_VOLUME = %s 
             WHERE USER_ID = %s AND W_ID = %s
         """
-        # Thay req.uid bằng user_id
         cursor.execute(query, (req.new_w_id, req.new_volume, user_id, req.old_w_id))
         db.commit()
 
         if cursor.rowcount > 0:
             return {"success": True, "message": "Updated successfully"}
         else:
-            # Có thể không tìm thấy dòng khớp với old_w_id
             return {"success": False, "message": "Favorite item not found to update"}
 
     except Exception as e:

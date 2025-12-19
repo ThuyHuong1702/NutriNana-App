@@ -52,7 +52,7 @@ export default function WaterInfoScreen() {
         }
     };
 
-    // Header của danh sách (Đoạn văn mô tả)
+    // Header của danh sách 
     const ListHeader = () => (
         <View style={styles.headerContainer}>
             <Text style={styles.description} maxFontSizeMultiplier={1.3}>
@@ -126,7 +126,7 @@ export default function WaterInfoScreen() {
 const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: '#fff' },
     
-    // Navbar (Thanh tiêu đề)
+    // Navbar 
     navBar: {
         flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
         paddingHorizontal: normalize(20), paddingVertical: normalize(15),

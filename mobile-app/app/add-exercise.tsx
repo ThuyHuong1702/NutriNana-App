@@ -6,23 +6,21 @@ import axios from 'axios';
 import { auth } from '@/src/config/firebase';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 
-// 👇 Import các component giao diện
 import { ListingLayout } from '@/src/components/listing/ListingLayout';
 import ActivityModal from '@/src/components/ActivityModal';
 
-// 👇 CẤU HÌNH
-const BACKEND_URL = 'http://192.168.1.3:8000'; // Thay IP của bạn
+const BACKEND_URL = 'http://192.168.1.3:8000'; 
 const EXERCISE_CATEGORIES = ["Phổ biến", "Gần đây", "Yêu thích"];
 
 export default function AddExerciseScreen() {
     const router = useRouter();
   
-    // 👇 1. LẤY THAM SỐ DATE ĐƯỢC TRUYỀN TỪ HOME
+    //1. LẤY THAM SỐ DATE ĐƯỢC TRUYỀN TỪ HOME
     const params = useLocalSearchParams();
     // Nếu có params.date thì dùng, nếu không (trường hợp vào trực tiếp) thì lấy hôm nay
     const targetDate = params.date as string || new Date().toISOString().split('T')[0];
 
-    // --- 1. STATE ---
+    //STATE
     const [selectedCategory, setSelectedCategory] = useState(EXERCISE_CATEGORIES[0]);
     const [searchText, setSearchText] = useState("");
     const [listData, setListData] = useState<any[]>([]);
@@ -32,7 +30,7 @@ export default function AddExerciseScreen() {
     const [selectedItem, setSelectedItem] = useState(null);
     const [userWeight, setUserWeight] = useState(60); // Mặc định 60kg
 
-    // --- 2. LẤY CÂN NẶNG USER (Để tính calo chính xác) ---
+    //LẤY CÂN NẶNG USER (Để tính calo chính xác)
     useEffect(() => {
         const fetchWeight = async () => {
             if (auth.currentUser) {
@@ -49,21 +47,15 @@ export default function AddExerciseScreen() {
         fetchWeight();
     }, []);
 
-    // --- 3. HÀM FETCH DATA (Dùng useCallback để gọi lại được) ---
+    //HÀM FETCH DATA
     const fetchListData = useCallback(async () => {
         setLoading(true);
         try {
             let url = "";
             const uid = auth.currentUser?.uid;
-
-            // Xác định URL API dựa trên category/search
             if (searchText.trim().length > 0) {
-                // API Tìm kiếm (Nếu bạn chưa viết API search gộp thì dùng API activities filter theo tên cũng được)
-                // Ở đây giả định bạn dùng API search riêng hoặc filter
                 url = `${BACKEND_URL}/api/search-activity?q=${encodeURIComponent(searchText.trim())}`;
             } else {
-                // Sử dụng API /activities đa năng chúng ta vừa viết
-                // Param: category & firebase_uid
                 const baseUrl = `${BACKEND_URL}/api/activities`;
                 
                 if (selectedCategory === "Gần đây" || selectedCategory === "Yêu thích") {
@@ -73,7 +65,6 @@ export default function AddExerciseScreen() {
                         setListData([]); setLoading(false); return;
                     }
                 } else {
-                    // Phổ biến, Cardio, Gym...
                     url = `${baseUrl}?category=${encodeURIComponent(selectedCategory)}&firebase_uid=${uid || ''}`;
                 }
             }
@@ -94,24 +85,20 @@ export default function AddExerciseScreen() {
         }
     }, [selectedCategory, searchText]);
 
-    // Gọi fetchListData khi category hoặc search text thay đổi
     useEffect(() => {
         const timeout = setTimeout(() => {
             fetchListData();
-        }, 500); // Debounce 500ms
+        }, 500); 
         return () => clearTimeout(timeout);
     }, [fetchListData]);
 
-    // --- 4. RENDER ITEM (GIAO DIỆN TỪNG DÒNG) ---
+    //RENDER ITEM (GIAO DIỆN TỪNG DÒNG)
     const renderActivityItem = ({ item }: { item: any }) => {
         let imageSource = require('@/assets/images/react-logo.png'); 
         const imgPath = item.image_url || item.IMAGE_PATH;
         if (imgPath) {
             imageSource = imgPath.startsWith('http') ? { uri: imgPath } : { uri: `${BACKEND_URL}/${imgPath}` };
-        }
-
-        // Hiển thị trạng thái yêu thích ngay trên list (nếu có)
-        // const isFav = item.is_favorite; 
+        } 
 
         return (
             <TouchableOpacity 
@@ -122,7 +109,6 @@ export default function AddExerciseScreen() {
                 <Image source={imageSource} style={styles.itemImage} resizeMode="cover"/>
                 
                 <View style={styles.itemInfo}>
-                    {/* Chỉ hiện tên bình thường, không hiện tim nhỏ bên cạnh nữa */}
                     <Text style={styles.itemName}>{item.name || item.ACTIVITY_NAME}</Text>
                     
                     <Text style={styles.itemDesc}>
@@ -130,13 +116,12 @@ export default function AddExerciseScreen() {
                     </Text>
                 </View>
                 
-                {/* 👇 LUÔN LUÔN LÀ DẤU CỘNG (Giống ban đầu) */}
                 <Ionicons name="add-circle" size={32} color="#4CAF50" />
             </TouchableOpacity>
         );
     };
 
-    // --- 5. RENDER TRANG CHÍNH ---
+    // RENDER TRANG CHÍNH
     return (
         <>
             {/* Sử dụng Layout chung */}
@@ -157,7 +142,6 @@ export default function AddExerciseScreen() {
                         <Text style={styles.emptyText}>Chưa có bài tập nào</Text>
                     </View>
                 )}
-                // ❌ Không có footer giỏ hàng
                 footerComponent={null}
             />
 

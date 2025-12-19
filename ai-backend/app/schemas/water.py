@@ -2,7 +2,6 @@
 from pydantic import BaseModel
 from typing import Optional, List
 
-# --- Model cho API lấy danh sách yêu thích ---
 class WaterFavoriteItem(BaseModel):
     FAV_ID: int
     W_ID: int
@@ -17,12 +16,11 @@ class WaterFavoriteResponse(BaseModel):
     data: List[WaterFavoriteItem]
     message: Optional[str] = None
 
-# --- Model cho API ghi nhật ký (Log Water) ---
 class LogWaterRequest(BaseModel):
-    uid: str          # Firebase UID
-    w_id: int         # ID loại nước
-    amount_ml: int    # Lượng uống
-    date_str: str     # Ngày uống (YYYY-MM-DD)
+    uid: str          
+    w_id: int         
+    amount_ml: int    
+    date_str: str     
 
 class LogWaterResponse(BaseModel):
     success: bool

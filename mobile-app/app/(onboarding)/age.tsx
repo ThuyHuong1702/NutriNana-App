@@ -6,19 +6,17 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { doc, updateDoc } from 'firebase/firestore';
 import { auth, db } from '@/src/config/firebase';
-import NumberPicker from '@/src/components/NumberPicker'; // Import component vừa tạo
+import NumberPicker from '@/src/components/NumberPicker';
 
 export default function AgeScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
-  const [age, setAge] = useState(22); // Mặc định 22 tuổi
-
+  const [age, setAge] = useState(22); 
   const handleNext = async () => {
     try {
       if (auth.currentUser) {
         await updateDoc(doc(db, 'users', auth.currentUser.uid), { age: age });
       }
-      // Chuyển sang màn hình Chiều cao
       router.push({ 
         pathname: '/(onboarding)/height', 
         params: { ...params, age } 

@@ -52,8 +52,7 @@ async def get_daily_summary(firebase_id: str, date_str: str = Query(None)):
         cursor.execute(sql_activity, (user_id, target_date))
         activity_data = cursor.fetchone()
 
-        # 👇 4. (MỚI) Tính tổng NƯỚC đã uống từ bảng DAILY_WATER_LOG
-        # Lưu ý: LOG_TIME thường là DATETIME nên cần dùng hàm DATE() để so sánh ngày
+        # 4. Tính tổng NƯỚC đã uống từ bảng DAILY_WATER_LOG
         sql_water = """
             SELECT COALESCE(SUM(ACTUAL_WATER_ML), 0) as total_water
             FROM DAILY_WATER_LOG
@@ -62,7 +61,7 @@ async def get_daily_summary(firebase_id: str, date_str: str = Query(None)):
         cursor.execute(sql_water, (user_id, target_date))
         water_data = cursor.fetchone()
 
-        # 5. Trả về kết quả tổng hợp
+        # 5. Trả về kết quả
         return {
             "success": True,
             "data": {
@@ -75,7 +74,7 @@ async def get_daily_summary(firebase_id: str, date_str: str = Query(None)):
                 # Dữ liệu vận động (Đã đốt)
                 "burned_calories": activity_data['total_burned'],
 
-                # 👇 Dữ liệu nước (Đã uống) - Thêm dòng này
+                # Dữ liệu nước (Đã uống)
                 "consumed_water": int(water_data['total_water']),
                 
                 # Dữ liệu mục tiêu (Lấy từ User Profile)

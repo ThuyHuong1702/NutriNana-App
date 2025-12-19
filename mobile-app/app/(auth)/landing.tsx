@@ -7,32 +7,27 @@ export default function LandingScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Phần 1: Tiêu đề & Ảnh */}
       <View style={styles.contentContainer}>
         <Text style={styles.appName}>NutriNana</Text>
         <Text style={styles.tagline}>Bạn đồng hành cho từng bữa ăn.</Text>
-        
-        {/* Khung ảnh minh họa */}
+
         <View style={styles.imagePlaceholder}>
-           {/* Thay ảnh minh họa của bạn vào đây */}
            <Image 
             source={require('@/assets/images/auth_logo.jpg')} 
             style={{width: 100, height: 100, opacity: 0.5}}
           />
         </View>
 
-        {/* Dấu chấm trang (Pagination dots) */}
         <View style={styles.dotsContainer}>
           <View style={[styles.dot, styles.activeDot]} />
           <View style={styles.dot} />
         </View>
       </View>
 
-      {/* Phần 2: Nút bấm */}
       <View style={styles.bottomContainer}>
         <TouchableOpacity 
           style={styles.button} 
-          onPress={() => router.push('/(auth)/signup')} // Sẽ tạo trang này sau
+          onPress={() => router.push('/(auth)/signup')} 
         >
           <Text style={styles.buttonText}>Đăng ký miễn phí</Text>
         </TouchableOpacity>
@@ -94,14 +89,14 @@ const styles = StyleSheet.create({
     marginHorizontal: 4,
   },
   activeDot: {
-    backgroundColor: '#FDD835', // Màu vàng chủ đạo
+    backgroundColor: '#FDD835', 
     width: 20, 
   },
   bottomContainer: {
     paddingBottom: 40,
   },
   button: {
-    backgroundColor: '#FDD835', // Màu vàng giống thiết kế
+    backgroundColor: '#FDD835',
     paddingVertical: 16,
     borderRadius: 30,
     alignItems: 'center',

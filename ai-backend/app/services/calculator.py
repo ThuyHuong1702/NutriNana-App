@@ -2,7 +2,7 @@ from datetime import date
 from app.schemas.profile import OnboardingData
 
 def calculate_metrics(data: OnboardingData):
-    # a. Tính ngày sinh (tương đối từ tuổi)
+    # a. Tính ngày sinh
     today = date.today()
     birth_year = today.year - data.age
     dob = date(birth_year, 1, 1)

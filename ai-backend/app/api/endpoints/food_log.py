@@ -5,13 +5,13 @@ from datetime import date, timedelta
 
 router = APIRouter()
 
-# Hàm hỗ trợ: Lấy USER_ID từ FIREBASE_ID
+# Lấy USER_ID từ FIREBASE_ID
 def get_user_id(cursor, firebase_id):
     cursor.execute("SELECT ID FROM USER_PROFILE WHERE FIREBASE_ID = %s", (firebase_id,))
     result = cursor.fetchone()
     return result['ID'] if result else None
 
-# Hàm hỗ trợ: Chuyển đổi tên bữa ăn sang ID
+#Chuyển đổi tên bữa ăn sang ID
 def get_meal_type_id(label):
     mapping = {
         "Sáng": 1,
@@ -29,7 +29,7 @@ async def get_daily_log(firebase_uid: str, date_str: str = Query(None)):
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
 
-        # 1. Lấy USER_ID (Giữ nguyên)
+        # 1. Lấy USER_ID
         cursor.execute("SELECT ID FROM USER_PROFILE WHERE FIREBASE_ID = %s", (firebase_uid,))
         user = cursor.fetchone()
         if not user:
@@ -38,10 +38,7 @@ async def get_daily_log(firebase_uid: str, date_str: str = Query(None)):
         user_id = user['ID']
         target_date = date_str if date_str else str(date.today())
 
-        # 2. Lấy dữ liệu Join (SỬA LẠI CÂU SQL NÀY)
-        # Chúng ta cần lấy:
-        # - F.PROTEIN, F.CARB, F.FAT: Dinh dưỡng gốc (cho 1 phần) để tính toán lại
-        # - L.PROTEIN, ...: Dinh dưỡng đã lưu (để hiển thị tổng)
+        # 2. Lấy dữ liệu Join
         sql = """
             SELECT 
                 L.F_LOG_ID, L.QUANTITY, L.MEAL_TYPE, 
@@ -61,7 +58,7 @@ async def get_daily_log(firebase_uid: str, date_str: str = Query(None)):
         cursor.close()
         conn.close()
 
-        # 3. Mapping MEAL_TYPE (Giữ nguyên)
+        # 3. Mapping MEAL_TYPE 
         meal_map = {1: "Sáng", 2: "Trưa", 3: "Tối", 4: "Phụ", 5: "Vận động"}
         
         formatted_logs = []
@@ -95,7 +92,7 @@ async def log_food(data: FoodLogItem):
         meal_type = get_meal_type_id(data.meal_label)
 
         # 3. Kiểm tra xem món này đã tồn tại trong bữa ăn ngày hôm đó chưa?
-        # Logic: Nếu người dùng đã thêm "Cơm" vào "Bữa sáng" hôm nay rồi, thì ta sẽ update dòng đó
+        # Logic: Nếu người dùng đã thêm "Cơm" vào "Bữa sáng" hôm nay rồi, thì sẽ update dòng đó
         check_sql = """
             SELECT F_LOG_ID FROM DAILY_FOOD_LOG 
             WHERE USER_ID = %s AND C_FOOD_ID = %s AND MEAL_TYPE = %s AND LOG_DATE = %s
@@ -193,8 +190,7 @@ async def get_recent_foods(firebase_uid: str):
         cursor.close()
         conn.close()
 
-        # 4. Format dữ liệu trả về (nếu cần thiết)
-        # Frontend có thể dùng list này để hiển thị trong tab "Gần đây"
+        # 4. Format dữ liệu trả về
         
         return {"success": True, "data": recent_foods}
 
@@ -258,7 +254,6 @@ async def get_foods_by_category(category: str = Query(...)):
         cursor = conn.cursor(dictionary=True)
 
         # Truy vấn tìm món ăn theo cột CATEGORY
-        # Lưu ý: Cột CATEGORY trong database phải chứa các chuỗi như "Ngũ cốc", "Đồ uống"...
         sql = """
             SELECT * FROM COOKED_FOOD 
             WHERE CATEGORY = %s

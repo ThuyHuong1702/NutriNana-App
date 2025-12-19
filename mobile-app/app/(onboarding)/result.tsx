@@ -9,7 +9,6 @@ import { doc, updateDoc } from 'firebase/firestore';
 
 const { width } = Dimensions.get('window');
 
-// 👇 Thay IP máy tính của bạn
 const BACKEND_URL = 'http://192.168.1.3:8000';
 
 export default function ResultScreen() {
@@ -26,7 +25,6 @@ export default function ResultScreen() {
       if (!auth.currentUser) return;
       const uid = auth.currentUser.uid;
       
-      // Gọi API lấy dữ liệu từ MySQL
       const response = await axios.get(`${BACKEND_URL}/api/get-profile/${uid}`);
       if (response.data.success) {
         setData(response.data.data);
@@ -41,18 +39,14 @@ export default function ResultScreen() {
   const handleFinish = async () => {
     try {
       if (auth.currentUser) {
-        // 👇 QUAN TRỌNG: Đánh dấu đã hoàn thành Onboarding
         await updateDoc(doc(db, 'users', auth.currentUser.uid), {
           isOnboardingCompleted: true 
         });
       }
-      
-      // Chuyển vào trang chủ
       router.replace('/(tabs)');
       
     } catch (error) {
       console.log("Lỗi cập nhật trạng thái:", error);
-      // Vẫn cho vào trang chủ dù lỗi mạng
       router.replace('/(tabs)');
     }
   };
@@ -68,9 +62,8 @@ export default function ResultScreen() {
 
   if (!data) return null;
 
-  // Xử lý hiển thị theo Mục tiêu
   const getGoalInfo = () => {
-    switch (data.goal_type || data.GOAL_TYPE) { // hoặc data.GOAL_TYPE tùy tên cột trong DB
+    switch (data.goal_type || data.GOAL_TYPE) { 
       case 'lose': return { title: 'Giảm cân', desc: 'Năng lượng nạp vào để giảm cân (calo thâm hụt = TDEE - 500)' };
       case 'gain': return { title: 'Tăng cân', desc: 'Năng lượng nạp vào để tăng cân (calo dư thừa = TDEE + 500)' };
       default: return { title: 'Duy trì cân nặng', desc: 'Năng lượng nạp vào để duy trì cân nặng (TDEE)' };
@@ -86,16 +79,14 @@ export default function ResultScreen() {
   };
 
   const goalInfo = getGoalInfo();
-  const bmiStatus = getBMIStatus(data.bmi || data.BMI); // Check tên cột chữ hoa/thường
+  const bmiStatus = getBMIStatus(data.bmi || data.BMI); 
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        
-        {/* Avatar & Header */}
+
         <View style={styles.header}>
           <View style={styles.avatarContainer}>
-             {/* Bạn có thể load ảnh theo character_id nếu muốn */}
              <Image source={require('@/assets/images/banana-muscle.jpg')} style={styles.avatar} resizeMode="contain" />
           </View>
           <Text style={styles.greeting}>
@@ -112,7 +103,6 @@ export default function ResultScreen() {
               <Text style={styles.bigNumber}>{data.daily_calories || data.DAILY_CALORIE}</Text>
               <Text style={styles.unitText}>Kcal/ngày</Text>
             </View>
-            {/* Vòng tròn Calo trang trí */}
             <View style={styles.circleGraph}>
                <Text style={styles.circleText}>{data.daily_calories || data.DAILY_CALORIE}</Text>
                <Text style={{fontSize: 10, color: '#999'}}>Mục tiêu</Text>
@@ -148,14 +138,12 @@ export default function ResultScreen() {
         {/* 3. Card Nước */}
         <Text style={styles.sectionLabel}>Bạn nên uống bao nhiêu nước</Text>
         <View style={[styles.card, {backgroundColor: '#FFFDE7'}]}> 
-           {/* Giả sử tính nước = cân nặng * 30ml (hoặc lấy từ DB nếu đã tính) */}
            <Text style={[styles.bigNumber, {color: '#F57F17'}]}>
              {data.DAILY_WATER_L} L
            </Text>
            <Text style={styles.unitText}>Lượng nước bạn cần uống</Text>
         </View>
 
-        {/* Nút Tiếp theo */}
         <TouchableOpacity style={styles.nextButton} onPress={handleFinish}>
           <Text style={styles.btnText}>Tiếp theo</Text>
         </TouchableOpacity>
@@ -181,15 +169,14 @@ const styles = StyleSheet.create({
   subTitle: { fontSize: 13, color: '#888', textAlign: 'center', paddingHorizontal: 20 },
 
   card: {
-    backgroundColor: '#FFF9C4', // Màu vàng nhạt đặc trưng
+    backgroundColor: '#FFF9C4', 
     borderRadius: 20,
     padding: 20,
     marginBottom: 20,
   },
   
-  // Calo Card
   caloRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  bigNumber: { fontSize: 28, fontWeight: 'bold', color: '#F57F17' }, // Màu cam đậm
+  bigNumber: { fontSize: 28, fontWeight: 'bold', color: '#F57F17' }, 
   unitText: { fontSize: 14, color: '#666' },
   circleGraph: {
     width: 70, height: 70, borderRadius: 35, backgroundColor: '#fff',
@@ -197,7 +184,6 @@ const styles = StyleSheet.create({
   },
   circleText: { fontSize: 16, fontWeight: 'bold', color: '#888' },
 
-  // BMI Card
   sectionLabel: { fontSize: 14, fontWeight: '600', color: '#555', marginBottom: 10, marginLeft: 5 },
   bmiHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
   cardTitle: { fontSize: 18, fontWeight: 'bold', color: '#333' },

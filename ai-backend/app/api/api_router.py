@@ -4,7 +4,6 @@ from app.api.endpoints import profile, food, food_log, activities, summary, wate
 
 api_router = APIRouter()
 
-# Nhúng router profile vào, thêm tiền tố /api
 api_router.include_router(profile.router, prefix="/api", tags=["profile"])
 api_router.include_router(food.router, prefix="/api", tags=["food"])
 api_router.include_router(food_log.router, prefix="/api", tags=["log"])

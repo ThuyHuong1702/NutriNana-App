@@ -10,22 +10,20 @@ const { width } = Dimensions.get('window');
 export default function SpeedScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
-  const goalType = params.goal; // 'lose', 'gain', 'maintain'
+  const goalType = params.goal;
 
-  // 1. CẤU HÌNH DỰA TRÊN MỤC TIÊU
   const config = useMemo(() => {
     if (goalType === 'gain') {
       return {
         title: "Bạn muốn tăng cân nhanh hay chậm?",
-        max: 0.5, // Tăng cân max chỉ nên là 0.5kg/tuần
+        max: 0.5, 
         safeLimit: 0.3,
         labelSafe: "An toàn - Tăng cơ bắp",
         labelFast: "Tăng nhanh - Có thể tích mỡ",
-        colorSafe: "#2E7D32", // Xanh lá
-        colorFast: "#F57F17"  // Cam đậm (Cảnh báo nhẹ hơn màu đỏ)
+        colorSafe: "#2E7D32", 
+        colorFast: "#F57F17"  
       };
     } else {
-      // Mặc định là Giảm cân (lose)
       return {
         title: "Bạn muốn giảm cân nhanh hay chậm?",
         max: 1.0,
@@ -33,17 +31,14 @@ export default function SpeedScreen() {
         labelSafe: "Dễ dàng - Bền vững",
         labelFast: "Tốc độ cao - Cẩn trọng",
         colorSafe: "#2E7D32",
-        colorFast: "#C62828"  // Đỏ (Cảnh báo mạnh)
+        colorFast: "#C62828"  
       };
     }
   }, [goalType]);
 
-  // Tốc độ mặc định ban đầu
   const [speed, setSpeed] = useState(goalType === 'gain' ? 0.2 : 0.5);
 
-  // 2. TÍNH TOÁN TRẠNG THÁI HIỂN THỊ (Màu sắc, lời khuyên)
   const speedStatus = useMemo(() => {
-    // Nếu là giữ cân thì không cần tính
     if (goalType === 'maintain') return { text: "Duy trì cân nặng", textColor: "#2E7D32", bgColor: "#E8F5E9", borderColor: "#A5D6A7", isWarning: false };
 
     const isFast = speed > config.safeLimit;
@@ -60,19 +55,16 @@ export default function SpeedScreen() {
   const handleNext = () => {
     router.push({
       pathname: '/(onboarding)/plan',
-      // Nếu là giữ cân thì speed = 0, ngược lại lấy giá trị slider
       params: { ...params, weightSpeed: goalType === 'maintain' ? 0 : speed.toFixed(1) }
     } as any);
   };
 
-  // Nếu người dùng chọn "Giữ cân" ở bước trước mà lỡ vào đây -> Tự động chuyển tiếp luôn
   useEffect(() => {
     if (goalType === 'maintain') {
         handleNext();
     }
   }, []);
 
-  // Nếu đang là giữ cân thì render màn hình trống trong lúc chuyển trang
   if (goalType === 'maintain') return <View style={{flex:1, backgroundColor:'#fff'}} />;
 
   return (
@@ -88,10 +80,8 @@ export default function SpeedScreen() {
         <Text style={styles.stepText}>7/7</Text>
       </View>
 
-      {/* 2. Tiêu đề ĐỘNG */}
       <Text style={styles.title}>{config.title}</Text>
 
-      {/* 3. Gợi ý (Label) ĐỘNG */}
       <View style={[
           styles.recommendationContainer, 
           { 
@@ -105,9 +95,7 @@ export default function SpeedScreen() {
         </Text>
       </View>
 
-      {/* 4. Thanh trượt (Slider) */}
       <View style={styles.sliderSection}>
-        {/* Bong bóng giá trị */}
         <View style={styles.labelContainer}>
             <View style={[styles.currentValueBubble, { backgroundColor: speedStatus.textColor }]}> 
                 <Text style={styles.currentValueText}>{speed.toFixed(1)} kg/tuần</Text>
@@ -118,11 +106,10 @@ export default function SpeedScreen() {
             <Slider
               style={styles.slider}
               minimumValue={0.1}
-              maximumValue={config.max} // Max thay đổi tùy Tăng hay Giảm
+              maximumValue={config.max} 
               step={0.1}
               value={speed}
               onValueChange={setSpeed}
-              // Màu sắc thay đổi theo mức độ an toàn
               minimumTrackTintColor={speedStatus.textColor} 
               maximumTrackTintColor="#ECEFF1"
               thumbTintColor={speedStatus.textColor}
@@ -130,8 +117,6 @@ export default function SpeedScreen() {
              <Text style={styles.maxValueText}>{config.max} kg</Text>
         </View>
       </View>
-
-      {/* 5. Nút Tiếp theo */}
       <View style={styles.footer}>
         <TouchableOpacity 
             style={[styles.nextButton, { backgroundColor: speedStatus.textColor }]} 
@@ -184,7 +169,6 @@ const styles = StyleSheet.create({
     marginTop: 40,
     marginBottom: 32,
   },
-  // Box gợi ý
   recommendationContainer: {
     alignSelf: 'center',
     flexDirection: 'row',

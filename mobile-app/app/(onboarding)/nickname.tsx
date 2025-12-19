@@ -40,8 +40,8 @@ export default function NicknameScreen() {
         });
       }
     router.push({
-      pathname: '/(onboarding)/hello', // File mới chúng ta sắp tạo
-      params: { charId, nickname }      // Truyền cả tên và nhân vật sang
+      pathname: '/(onboarding)/hello', 
+      params: { charId, nickname } 
     } as any);
     } catch (error) {
       console.log(error);
@@ -74,7 +74,6 @@ export default function NicknameScreen() {
 
             <View style={styles.messageBox}>
               <Text style={styles.messageText}>Rất vui được gặp bạn.</Text>
-              {/* Cho phép chữ to lên tối đa 1.5 lần thôi để không vỡ khung */}
               <Text style={[styles.messageText, {fontWeight: 'bold'}]} maxFontSizeMultiplier={1.5}>
                 Biệt danh của bạn là gì?
               </Text>
@@ -87,7 +86,6 @@ export default function NicknameScreen() {
               value={nickname}
               onChangeText={setNickname}
               autoCorrect={false}
-              // 👇 QUAN TRỌNG: Cho phép font to nhưng không phá vỡ input
               maxFontSizeMultiplier={1.2} 
             />
 
@@ -109,7 +107,7 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     flexGrow: 1,
-    paddingBottom: 40, // Tăng khoảng trống đáy để khi chữ to không bị sát lề
+    paddingBottom: 40, 
   },
   header: {
     paddingHorizontal: 20,
@@ -123,7 +121,7 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     alignItems: 'center',
-    paddingTop: height * 0.02, // Giảm khoảng cách cứng
+    paddingTop: height * 0.02, 
     width: '100%',
   },
   avatarContainer: {
@@ -135,7 +133,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#fff',
-    marginBottom: 20, // Dùng số cố định thay vì % để ổn định hơn khi zoom
+    marginBottom: 20, 
     ...Platform.select({
       ios: { shadowColor: "#000", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.15, shadowRadius: 10 },
       android: { elevation: 10 }
@@ -158,16 +156,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#FAFAFA',
   },
   messageText: {
-    fontSize: 16, // Đặt font cơ bản
+    fontSize: 16,
     color: '#333',
     textAlign: 'center',
     lineHeight: 24, 
   },
   input: {
     width: INPUT_WIDTH,
-    // 👇 SỬA ĐỔI QUAN TRỌNG:
-    minHeight: 60, // Dùng minHeight thay vì height
-    paddingVertical: 10, // Thêm padding để chữ to không chạm viền trên/dưới
+    minHeight: 60, 
+    paddingVertical: 10,
     
     borderWidth: 1.5,
     borderColor: '#FDD835',
@@ -175,7 +172,7 @@ const styles = StyleSheet.create({
     
     textAlign: 'center',
     textAlignVertical: 'center', 
-    includeFontPadding: false, // Giữ dòng này cho Android
+    includeFontPadding: false,
     
     fontSize: 20, 
     color: '#333',
@@ -185,8 +182,6 @@ const styles = StyleSheet.create({
   nextButton: {
     width: width * 0.6,
     backgroundColor: '#FDD835',
-    
-    // 👇 SỬA ĐỔI: Dùng padding để nút tự to ra theo chữ
     paddingVertical: 16, 
     minHeight: 55,
     

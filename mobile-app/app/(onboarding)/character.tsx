@@ -22,7 +22,6 @@ const CHARACTERS = [
 export default function CharacterScreen() {
   const router = useRouter();
 
-  // Mặc định chọn Chuck
   const DEFAULT_INDEX = 2; 
   const [selectedId, setSelectedId] = useState(CHARACTERS[DEFAULT_INDEX].id);
   const scrollX = useRef(new Animated.Value(DEFAULT_INDEX * ITEM_SIZE)).current;
@@ -44,7 +43,6 @@ export default function CharacterScreen() {
       <StatusBar barStyle="dark-content" />
       
       <View style={styles.header}>
-        {/* 👇 Cho phép tiêu đề to lên tối đa 1.5 lần */}
         <Text style={styles.title} maxFontSizeMultiplier={1.5}>Chọn bạn đồng hành</Text>
         <Text style={styles.subtitle} maxFontSizeMultiplier={1.3}>Lướt để chọn nhân vật yêu thích</Text>
       </View>
@@ -82,12 +80,9 @@ export default function CharacterScreen() {
                   <Image source={item.image} style={styles.image} resizeMode="contain" />
                   
                   <View style={styles.textContainer}>
-                    {/* 👇 Giới hạn chữ trong Card tối đa 1.2 lần để không vỡ Card */}
                     <Text style={styles.charName} maxFontSizeMultiplier={1.2} numberOfLines={1}>
                       {item.name}
                     </Text>
-                    
-                    {/* 👇 Giới hạn mô tả, nếu dài quá thì hiện dấu ... */}
                     <Text style={styles.charDesc} maxFontSizeMultiplier={1.1} numberOfLines={2}>
                       {item.desc}
                     </Text>
@@ -102,7 +97,6 @@ export default function CharacterScreen() {
 
       <View style={styles.footerContainer}>
         <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
-          {/* 👇 Giới hạn chữ trong nút bấm */}
           <Text style={styles.nextButtonText} maxFontSizeMultiplier={1.2}>
             Chọn {CHARACTERS.find(c => c.id === selectedId)?.name}
           </Text>
@@ -121,7 +115,7 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     paddingBottom: 20,
     alignItems: 'center',
-    paddingHorizontal: 20, // Thêm padding ngang để chữ to không sát lề
+    paddingHorizontal: 20,
   },
   title: {
     fontSize: width * 0.07,
@@ -141,8 +135,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF9C4',
     borderRadius: 30,
     alignItems: 'center',
-    // justifyContent: 'space-between', // BỎ dòng này đi
-    padding: 15, // Giảm padding một chút để tiết kiệm diện tích
+    padding: 15,
     borderWidth: 2,
     borderColor: '#fff',
     ...Platform.select({
@@ -152,13 +145,13 @@ const styles = StyleSheet.create({
   },
   image: {
     width: '100%',
-    flex: 1, // 👇 Thay đổi quan trọng: Để ảnh tự co giãn chiếm chỗ trống còn lại
+    flex: 1, 
     marginBottom: 10,
   },
   textContainer: {
     alignItems: 'center',
     paddingBottom: 10,
-    height: '25%', // 👇 Dành riêng 25% chiều cao card cho chữ
+    height: '25%',
     justifyContent: 'center',
   },
   charName: {
@@ -182,7 +175,7 @@ const styles = StyleSheet.create({
   nextButton: {
     backgroundColor: '#FDD835',
     paddingVertical: height * 0.02,
-    paddingHorizontal: width * 0.15, // Giảm padding ngang một chút
+    paddingHorizontal: width * 0.15,
     borderRadius: 30,
     ...Platform.select({
       ios: { shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 5 },

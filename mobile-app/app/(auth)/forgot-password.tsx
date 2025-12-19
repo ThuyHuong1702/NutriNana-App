@@ -13,10 +13,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 // 1. LẤY KÍCH THƯỚC MÀN HÌNH
 const { width, height } = Dimensions.get('window');
 
-// Tính toán kích thước tương đối
-const LOGO_WIDTH = width * 0.35; // Logo chiếm 35% chiều rộng
+const LOGO_WIDTH = width * 0.35;
 const LOGO_HEIGHT = LOGO_WIDTH * 0.7; 
-const INPUT_HEIGHT = height > 700 ? 55 : 45; // Chiều cao input linh hoạt
+const INPUT_HEIGHT = height > 700 ? 55 : 45; 
 
 export default function ForgotPasswordScreen() {
   const router = useRouter();
@@ -62,8 +61,7 @@ export default function ForgotPasswordScreen() {
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.container}>
-            
-            {/* Header: Nút Back & Logo */}
+
             <View style={styles.headerSection}>
               <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
                 <Ionicons name="arrow-back" size={28} color="#333" />
@@ -78,14 +76,12 @@ export default function ForgotPasswordScreen() {
               </View>
             </View>
 
-            {/* Nội dung chính */}
             <View style={styles.formContainer}>
               
               <Text style={styles.instructionText}>
                 Nhập email để nhận link đặt lại mật khẩu.
               </Text>
 
-              {/* Ô nhập Email */}
               <Text style={styles.label}>Email</Text>
               <TextInput 
                 style={styles.input} 
@@ -97,7 +93,6 @@ export default function ForgotPasswordScreen() {
                 autoCapitalize="none"
               />
 
-              {/* Nút Gửi Mail */}
               <TouchableOpacity 
                 style={styles.sendButton} 
                 onPress={handleSendMail}
@@ -129,10 +124,9 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    paddingHorizontal: width * 0.05, // Padding ngang 5%
+    paddingHorizontal: width * 0.05, 
   },
-  
-  // --- Header ---
+
   headerSection: {
     alignItems: 'center',
     marginTop: height * 0.02,
@@ -152,16 +146,15 @@ const styles = StyleSheet.create({
     height: LOGO_HEIGHT,
   },
 
-  // --- Form ---
   formContainer: {
     width: '100%',
   },
   instructionText: {
     fontSize: 16,
-    color: '#666', // Màu chữ xám nhạt hơn chút cho đẹp
+    color: '#666', 
     textAlign: 'center',
     marginBottom: 30,
-    paddingHorizontal: 20, // Padding để chữ không bị sát lề quá
+    paddingHorizontal: 20, 
     lineHeight: 22,
   },
   label: {

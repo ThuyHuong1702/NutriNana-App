@@ -8,7 +8,7 @@ class FoodLogItem(BaseModel):
     quantity: float
     log_date: str       # YYYY-MM-DD
     
-    # Thông tin dinh dưỡng (Snapshot)
+    # Thông tin dinh dưỡng
     calories: float
     protein: float
     carb: float

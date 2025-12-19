@@ -7,11 +7,10 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import DateTimePicker from '@react-native-community/datetimepicker'; // 👇 Thư viện mới cài
+import DateTimePicker from '@react-native-community/datetimepicker'; 
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
-// --- HÀM CHUẨN HÓA KÍCH THƯỚC ---
 const scale = SCREEN_WIDTH / 375;
 const normalize = (size: number) => {
     const newSize = size * scale;
@@ -26,11 +25,11 @@ export default function WaterReminderScreen() {
     const router = useRouter();
     const insets = useSafeAreaInsets();
 
-    // --- STATE ---
+    //STATE
     const [isEnabled, setIsEnabled] = useState(true);
     const [wakeUpTime, setWakeUpTime] = useState(new Date().setHours(6, 0, 0, 0)); 
     const [bedTime, setBedTime] = useState(new Date().setHours(22, 0, 0, 0));
-    const [interval, setInterval] = useState(60); // Lưu số phút (int)
+    const [interval, setInterval] = useState(60);
 
     // State cho Modal chọn giờ
     const [showTimePicker, setShowTimePicker] = useState(false);
@@ -43,7 +42,7 @@ export default function WaterReminderScreen() {
     // Danh sách chu kỳ
     const intervalOptions = [30, 60, 90, 120, 150, 180];
 
-    // --- HÀM XỬ LÝ ---
+    //HÀM XỬ LÝ
     const toggleSwitch = () => setIsEnabled(previousState => !previousState);
 
     // Format giờ hiển thị (VD: 06:00)
@@ -78,7 +77,6 @@ export default function WaterReminderScreen() {
         }
     };
 
-    // Nút "Xong" trên iOS
     const confirmIOSDate = () => {
         if (timePickerMode === 'wake') setWakeUpTime(tempDate.getTime());
         else setBedTime(tempDate.getTime());
@@ -214,7 +212,6 @@ export default function WaterReminderScreen() {
                 />
             )}
 
-            {/* Trên iOS, cần Modal trượt lên từ dưới */}
             {Platform.OS === 'ios' && (
                 <Modal
                     visible={showTimePicker}
@@ -281,7 +278,6 @@ const styles = StyleSheet.create({
     valueText: { fontSize: normalize(16), color: '#00C853', fontWeight: '500' },
     disabledText: { color: '#BBB' },
 
-    // Styles cho Modal Chu kỳ
     modalOverlay: {
         flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', 
         justifyContent: 'center', alignItems: 'center'
@@ -300,7 +296,6 @@ const styles = StyleSheet.create({
     intervalText: { fontSize: 16, color: '#333' },
     intervalTextActive: { color: '#00C853', fontWeight: 'bold' },
 
-    // Styles cho iOS DatePicker Modal
     iosModalOverlay: {
         flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.3)'
     },

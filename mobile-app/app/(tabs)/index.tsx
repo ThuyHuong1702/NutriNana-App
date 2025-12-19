@@ -28,10 +28,10 @@ const scaleFont = (size: number) => {
     return Math.round(PixelRatio.roundToNearestPixel(newSize)) - 2;
   }
 }
-// 👇 Thay IP máy tính của bạn
+
 const BACKEND_URL = 'http://192.168.1.3:8000'; 
 
-// Danh sách các loại bữa ăn để hiển thị nút bấm
+// Danh sách các loại bữa ăn
 const MEAL_TYPES = [
   { label: 'Sáng', icon: 'partly-sunny', color: '#FFB300' },
   { label: 'Trưa', icon: 'fast-food', color: '#FB8C00' },
@@ -59,18 +59,15 @@ export default function HomeScreen() {
   useEffect(() => {
       if (params.date) {
           // Nếu có ngày gửi về, cập nhật state selectedDate
-          // params.date đang là string, cần convert lại thành Date object
           const newDate = new Date(params.date as string);
           setSelectedDate(newDate);
           
-          // (Tùy chọn) Gọi lại hàm lấy dữ liệu fetchData() ngay lập tức nếu cần
           // fetchData(newDate); 
       }
   }, [params.date]);
   // const [waterFavs, setWaterFavs] = useState([]);
   const [waterFavs, setWaterFavs] = useState<any[]>([]);
-  // 👇 2. Khởi tạo Player bằng Hook (Đặt ở đầu component, giống useState)
-    // Tự động tải file và giữ trong bộ nhớ, sẵn sàng phát ngay lập tức
+    // Tự động tải file và giữ trong bộ nhớ
   const player = useAudioPlayer(require('@/assets/sounds/water_drop.mp3'));
   const playWaterSound = () => {
     console.log("Status player:", player); // 👇 In ra xem player có null không
@@ -101,7 +98,7 @@ export default function HomeScreen() {
   // State lưu danh sách chi tiết các món đã ăn (Logs)
   const [dailyLogs, setDailyLogs] = useState<any[]>([]);
 
-  // 👇 STATE MỚI: Quản lý mở rộng/thu gọn của từng bữa ăn
+
   const [expandedMeals, setExpandedMeals] = useState<{[key: string]: boolean}>({});
 
   // Hàm toggle trạng thái mở rộng
@@ -195,13 +192,11 @@ export default function HomeScreen() {
   useEffect(() => {
       if (params.date) {
           const returnedDate = new Date(params.date as string);
-          // Chỉ cần set state, việc fetch data để Effect số 3 lo
           setSelectedDate(returnedDate); 
       }
   }, [params.date]);
 
   // 3. TỰ ĐỘNG GỌI API KHI NGÀY THAY ĐỔI (Đây là cái bạn thiếu)
-  // Bất kể bạn ấn Next, Prev hay từ trang Detail về, cứ selectedDate đổi là nó chạy.
   useEffect(() => {
       fetchData(); 
   }, [selectedDate]);
@@ -211,7 +206,6 @@ export default function HomeScreen() {
       router.push({
           pathname: '/water-detail',
           params: { 
-              // Gửi ngày đang chọn sang trang Detail
               initialDate: selectedDate.toISOString() 
           }
       });
@@ -219,18 +213,18 @@ export default function HomeScreen() {
 
   // 2. HÀM LOG NƯỚC NHANH
   const handleQuickLogWater = async (item: any) => {
-      playWaterSound(); // Gọi hàm phát nhạc
+      playWaterSound();
       try {
           const payload = {
               uid: auth.currentUser?.uid,
               w_id: item.W_ID,
               amount_ml: item.DEFAULT_VOLUME,
-              date_str: formatDateForAPI(selectedDate) // Log đúng vào ngày đang chọn
+              date_str: formatDateForAPI(selectedDate)
           };
           
           const res = await axios.post(`${BACKEND_URL}/api/log-water`, payload);
           if (res.data.success) {
-              fetchData(); // Load lại để cập nhật số nước đã uống
+              fetchData();
           }
       } catch (e) {
           console.log("Lỗi log nước:", e);
@@ -255,12 +249,12 @@ export default function HomeScreen() {
   // Công thức: Còn lại = Mục tiêu - Đã ăn + Vận động
   const remainingCalo = Math.round(targetCalo - consumed.calories + consumed.burned);
 
-  // --- HÀM RENDER THẺ CHI TIẾT BỮA ĂN (CÓ LOGIC THU GỌN) ---
+  // --- HÀM RENDER THẺ CHI TIẾT BỮA ĂN
   const renderMealDetailCard = (mealLabel: string) => {
     // 1. Lọc các món ăn thuộc bữa này
     const foodsInMeal = dailyLogs.filter(item => item.meal_label === mealLabel);
     
-    // Nếu chưa có món nào -> Ẩn luôn thẻ (return null)
+
     if (foodsInMeal.length === 0) return null;
     
     // 2. Tính toán chỉ số cho thẻ
@@ -412,7 +406,6 @@ export default function HomeScreen() {
                   ]} 
                 />
               </View>
-              {/* 👇 ĐÃ SỬA: Lồng Text để đổi màu từng phần */}
               <Text style={styles.macroValue} numberOfLines={1} adjustsFontSizeToFit>
                 <Text style={{ color: consumed.carbs > targetCarbs ? '#E53935' : '#4CAF50' }}>
                   {Math.round(consumed.carbs)}
@@ -540,10 +533,10 @@ export default function HomeScreen() {
             </TouchableOpacity>
 
              <ScrollView 
-                 horizontal={true} // Bật chế độ cuộn ngang
-                 showsHorizontalScrollIndicator={false} // Ẩn thanh cuộn cho đẹp
-                 contentContainerStyle={styles.waterScrollContent} // Style cho nội dung bên trong
-                 style={{ marginTop: 10 }} // Khoảng cách với header
+                 horizontal={true} 
+                 showsHorizontalScrollIndicator={false} 
+                 contentContainerStyle={styles.waterScrollContent} 
+                 style={{ marginTop: 10 }} 
              >
                  {waterFavs.length > 0 ? (
                      waterFavs.map((btn, index) => {
@@ -557,7 +550,7 @@ export default function HomeScreen() {
                          return (
                              <TouchableOpacity 
                                 key={index} 
-                                style={styles.waterBtn} // 👇 Style nút sẽ sửa lại ở dưới
+                                style={styles.waterBtn} 
                                 onPress={() => handleQuickLogWater(btn)}
                              >
                                 <Image source={imgSource} style={styles.waterImg} resizeMode="contain" />
@@ -596,14 +589,12 @@ export default function HomeScreen() {
   );
 }
 
-// 👇 Component HomeCalorieCircle cập nhật
+
 const HomeCalorieCircle = ({ target, consumed, remaining }: any) => {
-  // Bạn có thể để radius cứng hoặc truyền props vào nếu muốn responsive kích thước vòng tròn
   const radius = 65; 
   const strokeWidth = 8;
   const circumference = 2 * Math.PI * radius;
-  const size = radius * 2 + strokeWidth; // Kích thước tổng thể (140)
-
+  const size = radius * 2 + strokeWidth;
   const progress = target > 0 ? Math.min(consumed / target, 1) : 0;
   const isOver = remaining < 0;
   const progressColor = isOver ? '#E53935' : '#4CAF50'; 
@@ -637,8 +628,8 @@ const HomeCalorieCircle = ({ target, consumed, remaining }: any) => {
         <Text 
           style={[styles.circleBigNum, { color: isOver ? '#E53935' : '#333' }]} 
           numberOfLines={1} 
-          adjustsFontSizeToFit // 👈 Quan trọng: Tự thu nhỏ font nếu số quá to (ví dụ: 10000)
-          minimumFontScale={0.5} // Thu nhỏ tối đa 50%
+          adjustsFontSizeToFit 
+          minimumFontScale={0.5} 
         >
           {remaining}
         </Text>
@@ -679,22 +670,22 @@ const styles = StyleSheet.create({
   summaryLabel: { fontSize: 12, color: '#555' },
 
   innerCircle: { 
-    position: 'absolute', // Đảm bảo nằm đè lên trên SVG
+    position: 'absolute', 
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: '10%', // Padding % để tránh chữ dính sát viền khi vòng tròn nhỏ
+    paddingHorizontal: '10%',
   },
   
   circleBigNum: { 
-    fontSize: 28, // Kích thước cơ bản
+    fontSize: 28,
     fontWeight: 'bold', 
     color: '#333',
     textAlign: 'center',
-    width: '100%', // Chiếm hết chiều ngang của innerCircle để căn giữa chuẩn
+    width: '100%',
   },
   
   circleLabel: { 
@@ -709,12 +700,12 @@ const styles = StyleSheet.create({
   macroRow: { 
     flexDirection: 'row', 
     justifyContent: 'space-between', 
-    gap: 8, // 👇 Tạo khoảng cách đều giữa 3 cột, tránh dính sát nhau trên màn hình nhỏ
+    gap: 8, 
     marginTop: 10
   },
   
   macroItem: { 
-    flex: 1, // 👇 QUAN TRỌNG: Chia đều không gian (33% mỗi cột) bất kể kích thước màn hình
+    flex: 1,
     alignItems: 'center',
   },
   
@@ -726,12 +717,12 @@ const styles = StyleSheet.create({
   },
   
   progressBarBg: { 
-    width: '100%', // Luôn chiếm hết chiều ngang của macroItem (flex 1)
-    height: 6,     // Tăng nhẹ chiều cao cho dễ nhìn
+    width: '100%', 
+    height: 6,   
     backgroundColor: 'rgba(0,0,0,0.05)', 
     borderRadius: 3, 
     marginBottom: 5,
-    overflow: 'hidden' // Để bo góc cho thanh tiến trình con bên trong
+    overflow: 'hidden' 
   },
   
   progressBarFill: { 
@@ -788,21 +779,18 @@ const styles = StyleSheet.create({
   },
   waterTarget: { color: '#ccc', fontSize: 14 },
   
-  // 👇 STYLE MỚI CHO SCROLLVIEW
+
   waterScrollContent: {
-      paddingRight: 20, // Padding bên phải để nút cuối không dính lề khi cuộn hết
-      gap: 12 // Khoảng cách giữa các nút
+      paddingRight: 20, 
+      gap: 12 
   },
 
   waterBtn: { 
       flexDirection: 'row', 
       alignItems: 'center', 
       backgroundColor: '#444', 
-      padding: 12, // ⬆️ Tăng padding nội bộ một chút cho thoáng
+      padding: 12, 
       borderRadius: 14, 
-      
-      // 👇 QUAN TRỌNG: Tăng chiều rộng nút
-      // Vì là cuộn ngang, ta cho nút to ra (chiếm 55% màn hình) để chữ hiển thị thoải mái
       width: width * 0.65, 
       
       borderWidth: 1, 
@@ -810,7 +798,7 @@ const styles = StyleSheet.create({
   },
   
   waterImg: { 
-      width: 40, // ⬆️ Tăng ảnh từ 32 lên 40 cho cân đối với chữ to
+      width: 40, 
       height: 40, 
       marginRight: 10 
   },
@@ -819,13 +807,13 @@ const styles = StyleSheet.create({
   
   waterBtnText: { 
       color: '#fff', 
-      fontSize: 16, // ⬆️ Tăng từ 13 lên 16 (Chữ to, rõ)
-      fontWeight: '700' // Đậm hơn chút
+      fontSize: 16, 
+      fontWeight: '700' 
   },
   
   waterSubText: { 
       color: '#AAA', 
-      fontSize: 13, // ⬆️ Tăng từ 11 lên 13
+      fontSize: 13,
       marginTop: 2 
   }
 });

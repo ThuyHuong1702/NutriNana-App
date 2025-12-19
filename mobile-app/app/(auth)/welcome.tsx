@@ -6,7 +6,6 @@ import { useEffect } from 'react';
 export default function WelcomeScreen() {
   const router = useRouter();
 
-  // Tự động chuyển trang sau 3 giây (hoặc bỏ đi nếu muốn bấm mới chuyển)
   useEffect(() => {
     const timer = setTimeout(() => {
       router.push('/(auth)/landing');
@@ -20,9 +19,8 @@ export default function WelcomeScreen() {
       activeOpacity={1} 
       onPress={() => router.push('/(auth)/landing')}
     >
-      {/* Thay ảnh con chuối của bạn vào đây */}
       <Image 
-        source={require('@/assets/images/banana_mascot.jpg')} // Tạm dùng logo React, bạn nhớ đổi thành 'banana-mascot.png'
+        source={require('@/assets/images/banana_mascot.jpg')} 
         style={styles.image} 
         resizeMode="contain"
       />

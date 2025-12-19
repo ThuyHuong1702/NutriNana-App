@@ -24,8 +24,6 @@ export default function GenderScreen() {
         });
       }
       
-      // Chuyển sang màn hình tiếp theo (Chỉ số cơ thể - Physical)
-      // Bạn cần tạo file physical.tsx sau bước này
     router.push({ 
       pathname: '/(onboarding)/age', 
       params: { ...params, gender } 
@@ -45,7 +43,6 @@ export default function GenderScreen() {
           <Ionicons name="arrow-back" size={24} color="#333" />
         </TouchableOpacity>
         
-        {/* Thanh tiến trình màu vàng */}
         <View style={styles.progressContainer}>
           <View style={[styles.progressFill, { width: '15%' }]} /> 
         </View>
@@ -58,7 +55,6 @@ export default function GenderScreen() {
 
         <View style={styles.selectionContainer}>
           
-          {/* Lựa chọn NAM */}
           <TouchableOpacity 
             style={styles.optionWrapper} 
             onPress={() => setGender('male')}
@@ -68,7 +64,6 @@ export default function GenderScreen() {
               styles.circle, 
               gender === 'male' && styles.selectedCircle
             ]}>
-              {/* 👇 DÙNG ICON NAM TẠI ĐÂY */}
               <Ionicons name="male" size={60} color={gender === 'male' ? '#FDD835' : '#CCC'} />
               
               {gender === 'male' && (
@@ -80,7 +75,6 @@ export default function GenderScreen() {
             <Text style={[styles.label, gender === 'male' && styles.selectedLabel]}>Nam</Text>
           </TouchableOpacity>
 
-          {/* Lựa chọn NỮ */}
           <TouchableOpacity 
             style={styles.optionWrapper} 
             onPress={() => setGender('female')}
@@ -90,7 +84,6 @@ export default function GenderScreen() {
               styles.circle, 
               gender === 'female' && styles.selectedCircle
             ]}>
-              {/* 👇 DÙNG ICON NỮ TẠI ĐÂY */}
               <Ionicons name="female" size={60} color={gender === 'female' ? '#FDD835' : '#CCC'} />
               
               {gender === 'female' && (
@@ -139,13 +132,13 @@ const styles = StyleSheet.create({
   progressContainer: {
     flex: 1,
     height: 8,
-    backgroundColor: '#FFF9C4', // Màu nền thanh progress nhạt
+    backgroundColor: '#FFF9C4', 
     borderRadius: 4,
     marginHorizontal: 15,
   },
   progressFill: {
     height: '100%',
-    backgroundColor: '#FDD835', // Màu vàng đậm
+    backgroundColor: '#FDD835', 
     borderRadius: 4,
   },
   stepText: {
@@ -170,7 +163,7 @@ const styles = StyleSheet.create({
   },
   selectionContainer: {
     alignItems: 'center',
-    gap: 40, // Khoảng cách giữa 2 lựa chọn
+    gap: 40, 
   },
   optionWrapper: {
     alignItems: 'center',
@@ -179,7 +172,7 @@ const styles = StyleSheet.create({
     width: 140,
     height: 140,
     borderRadius: 70,
-    backgroundColor: '#F5F5F5', // Màu xám nhạt khi chưa chọn
+    backgroundColor: '#F5F5F5',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 10,
@@ -187,8 +180,8 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
   },
   selectedCircle: {
-    backgroundColor: '#FFF9C4', // Nền vàng nhạt khi chọn
-    borderColor: '#FDD835',     // Viền vàng đậm
+    backgroundColor: '#FFF9C4', 
+    borderColor: '#FDD835',
   },
   genderImage: {
     width: 80,

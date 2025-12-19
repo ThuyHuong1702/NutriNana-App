@@ -6,7 +6,6 @@ import axios from 'axios';
 import { auth } from '@/src/config/firebase';
 import FoodModal from '@/src/components/FoodModal';
 import Svg, { Circle, G } from 'react-native-svg';
-// 👇 1. Import hook lấy Safe Area
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const { width } = Dimensions.get('window');
@@ -18,7 +17,7 @@ const MEAL_RATIOS: {[key: string]: number} = {
 
 export default function MealDetailScreen() {
   const router = useRouter();
-  const insets = useSafeAreaInsets(); // 👇 Lấy thông số tai thỏ/home indicator
+  const insets = useSafeAreaInsets(); 
   const params = useLocalSearchParams();
   const mealLabel = params.meal as string; 
   const dateStr = params.date as string || new Date().toISOString().split('T')[0];
@@ -117,7 +116,6 @@ export default function MealDetailScreen() {
                         fat={total.fat} 
                         totalCal={total.cal}
                     />
-                    {/* Text Absolute: Dùng adjustsFontSizeToFit để tự thu nhỏ nếu số quá to */}
                     <View style={styles.chartTextAbsolute}>
                         <Text style={styles.chartLabel}>Đã nạp</Text>
                         <Text 
@@ -151,7 +149,6 @@ export default function MealDetailScreen() {
                     <TouchableOpacity key={index} style={styles.foodItem} onPress={() => handleOpenFood(item)}>
                         <Image source={imgSource} style={styles.foodImage} />
                         <View style={styles.foodInfo}>
-                            {/* Cho phép tên món xuống dòng, không fix height */}
                             <Text style={styles.foodName}>{item.DISH_NAME}</Text>
                             <Text style={styles.foodUnit}>{item.QUANTITY} ( Đơn vị {item.UNIT || 'phần'} )</Text>
                         </View>
@@ -164,7 +161,7 @@ export default function MealDetailScreen() {
         </View>
       </ScrollView>
 
-      {/* FOOTER: Dùng paddingBottom theo insets để tránh Home Indicator */}
+      {/* FOOTER*/}
       <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom + 10, 20) }]}>
         <TouchableOpacity 
             style={styles.addButton}
@@ -185,7 +182,6 @@ export default function MealDetailScreen() {
   );
 }
 
-// 👇 Component DonutChart (Giữ nguyên logic)
 const DonutChart = ({ radius, strokeWidth, carbs, protein, fat, totalCal }: any) => {
     const carbsCal = carbs * 4;
     const proteinCal = protein * 4;
@@ -216,20 +212,16 @@ const DonutChart = ({ radius, strokeWidth, carbs, protein, fat, totalCal }: any)
     );
 };
 
-// 👇 MacroRow: Fix lại Layout dùng Flex thay vì Width cứng
 const MacroRow = ({color, label, value, total, calPerGram}: any) => {
     const calFromMacro = value * calPerGram;
     const percent = total > 0 ? Math.round((calFromMacro / total) * 100) : 0;
     
     return (
         <View style={styles.macroRow}>
-            {/* Phần nhãn: Dùng flex để co giãn */}
             <View style={{flexDirection: 'row', alignItems: 'center', flex: 1}}>
                 <View style={{width: 10, height: 10, borderRadius: 2, backgroundColor: color, marginRight: 8}} />
                 <Text style={{color: '#BBB', fontSize: 13}} numberOfLines={1} adjustsFontSizeToFit>{label}</Text>
             </View>
-            
-            {/* Phần số liệu: Width vừa đủ hoặc flex */}
             <View style={{flexDirection: 'row', alignItems: 'center', width: 90, justifyContent: 'flex-end'}}>
                 <Text style={{color: '#FFF', fontSize: 13, marginRight: 8}}>{percent}%</Text>
                 <Text style={{color: '#FFF', fontSize: 13, fontWeight: '600'}}>{value.toFixed(1)}g</Text>
@@ -269,7 +261,7 @@ const styles = StyleSheet.create({
   chartRow: { 
     flexDirection: 'row', 
     alignItems: 'center', 
-    justifyContent: 'space-between' // Đẩy chart và macro ra 2 bên
+    justifyContent: 'space-between' 
   },
   chartContainer: { 
       width: 120, height: 120, 
@@ -280,13 +272,13 @@ const styles = StyleSheet.create({
       position: 'absolute', 
       alignItems: 'center', 
       justifyContent: 'center', 
-      width: 80, height: 80 // Giới hạn vùng chứa text để không tràn ra ngoài
+      width: 80, height: 80 
   },
   chartLabel: { color: '#AAA', fontSize: 12, marginBottom: 2 },
   chartValue: { color: '#FFF', fontSize: 24, fontWeight: 'bold' },
   
   macroContainer: { 
-      flex: 1, // Chiếm phần còn lại của hàng
+      flex: 1,
       marginLeft: 20 
   },
   macroRow: { 
@@ -303,7 +295,7 @@ const styles = StyleSheet.create({
       flexDirection: 'row', 
       alignItems: 'center', 
       marginBottom: 20,
-      width: '100%' // Đảm bảo chiếm hết chiều ngang
+      width: '100%' 
   },
   foodImage: { 
       width: 48, height: 48, 
@@ -312,15 +304,15 @@ const styles = StyleSheet.create({
       backgroundColor: '#333' 
   },
   foodInfo: { 
-      flex: 1, // Co giãn linh hoạt
-      marginRight: 8 // Cách số calo một chút
+      flex: 1, 
+      marginRight: 8 
   },
   foodName: { 
       color: '#FFF', 
       fontSize: 15, 
       fontWeight: '500', 
       marginBottom: 4,
-      flexWrap: 'wrap' // Cho phép xuống dòng nếu tên dài
+      flexWrap: 'wrap' 
   },
   foodUnit: { color: '#888', fontSize: 13 },
   foodCal: { color: '#888', fontSize: 13, marginRight: 4 },

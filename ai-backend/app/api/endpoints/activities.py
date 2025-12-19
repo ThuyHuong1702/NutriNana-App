@@ -55,7 +55,7 @@ async def get_activities(
     try:
         user_id = get_user_id(cursor, firebase_uid) if firebase_uid else None
         
-        # SQL cơ bản
+        # SQL
         base_sql = """
             SELECT 
                 A.ACTIVITY_ID as id,
@@ -80,7 +80,6 @@ async def get_activities(
             cursor.execute(sql, params)
             
         elif category == "Gần đây" and user_id:
-            # 👇 ĐÃ SỬA: JOIN VỚI ACTIVITY_LEVELS ĐỂ LẤY ID HOẠT ĐỘNG
             sql_log = """
                 SELECT L.ACTIVITY_ID 
                 FROM DAILY_ACTIVITY_LOG D
@@ -139,7 +138,7 @@ async def get_activities(
     finally:
         conn.close()
 
-# --- API 2: LƯU HOẠT ĐỘNG (Giữ nguyên) ---
+# --- API 2: LƯU HOẠT ĐỘNG ---
 @router.post("/log-activity")
 async def log_activity(payload: ActivityLogSchema):
     conn = get_db_connection()
@@ -168,7 +167,7 @@ async def log_activity(payload: ActivityLogSchema):
     finally:
         conn.close()
 
-# --- API 3: THẢ TIM (Giữ nguyên) ---
+# --- API 3: THẢ TIM ---
 @router.post("/toggle-favorite-activity")
 async def toggle_favorite(payload: FavoriteSchema):
     conn = get_db_connection()

@@ -5,15 +5,12 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 import { auth } from '@/src/config/firebase';
-import { useSafeAreaInsets } from 'react-native-safe-area-context'; // Import this
-
-// 👇 Import components
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ListingLayout } from '@/src/components/listing/ListingLayout';
 import FoodModal from '@/src/components/FoodModal';
 import CartTrayModal from '@/src/components/CartTrayModal'; 
 
-// 👇 CONFIG
-const BACKEND_URL = 'http://192.168.1.3:8000'; // Replace with your IP
+const BACKEND_URL = 'http://192.168.1.3:8000'; 
 const FOOD_CATEGORIES = [
   "Phổ biến", "Gần đây", "Yêu thích", "Tự tạo", "Kế hoạch", 
   "Cơm phần", "Món mặn", "Đồ ăn liền", "Cháo", "Canh", 
@@ -21,17 +18,15 @@ const FOOD_CATEGORIES = [
 ];
 const CART_TABS = ["Sáng", "Trưa", "Tối", "Phụ"];
 
-// 👇 Helper function to create empty cart
 const createEmptyCart = () => CART_TABS.reduce((acc, tab) => ({ ...acc, [tab]: [] }), {});
 
 export default function AddFoodScreen() {
     const router = useRouter();
     const params = useLocalSearchParams();
-    const insets = useSafeAreaInsets(); // Get safe area insets
+    const insets = useSafeAreaInsets(); 
     
-    // --- 1. STATE MANAGEMENT ---
     const mealLabel = (params.meal as string) || "Bữa sáng";
-    const cartKey = mealLabel.replace("Bữa ", ""); // e.g., "Sáng"
+    const cartKey = mealLabel.replace("Bữa ", "");
 
     const selectedDate = (params.date as string) || new Date().toISOString().split('T')[0];
 
@@ -237,7 +232,6 @@ export default function AddFoodScreen() {
                 style={styles.itemRow} 
                 onPress={() => { setSelectedItem(existingItem || item); setDetailModalVisible(true); }}
                 activeOpacity={0.7}
-                // Accessibility props
                 accessible={true}
                 accessibilityLabel={`${name}, ${cal} calories per ${unit}`}
                 accessibilityRole="button"
@@ -411,7 +405,7 @@ const styles = StyleSheet.create({
         paddingVertical: 12, 
         borderBottomWidth: 1, 
         borderBottomColor: '#F0F0F0',
-        minHeight: 80 // Ensure minimum height for touch target
+        minHeight: 80 
     },
     itemImage: { 
         width: 56, 
@@ -423,21 +417,21 @@ const styles = StyleSheet.create({
     itemInfo: { 
         flex: 1, 
         justifyContent: 'center',
-        paddingRight: 8 // Add padding to avoid overlap with button
+        paddingRight: 8 
     },
     itemName: { 
         fontSize: 15, 
         fontWeight: '600', 
         color: '#333', 
         marginBottom: 4,
-        flexWrap: 'wrap' // Allow wrapping
+        flexWrap: 'wrap' 
     },
     itemDesc: { 
         fontSize: 12, 
         color: '#888' 
     },
     addButton: { 
-        padding: 8, // Increase padding for easier tapping
+        padding: 8,
     },
     footerShadow: { 
         flexDirection: 'row', 
@@ -458,7 +452,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row', 
         alignItems: 'center', 
         flex: 1,
-        marginRight: 10 // Prevent text from hitting the button
+        marginRight: 10 
     },
     footerMealName: { 
         fontSize: 15, 
@@ -480,7 +474,7 @@ const styles = StyleSheet.create({
     finishText: { 
         fontWeight: 'bold', 
         color: '#333',
-        fontSize: 14 // Explicit font size
+        fontSize: 14
     },
     badge: { 
         position: 'absolute', 
@@ -488,7 +482,7 @@ const styles = StyleSheet.create({
         right: -5, 
         backgroundColor: 'red', 
         borderRadius: 10, 
-        minWidth: 16, // Use minWidth to allow growth for 2 digits
+        minWidth: 16, 
         height: 16, 
         alignItems: 'center', 
         justifyContent: 'center',
@@ -526,7 +520,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         marginTop: 60,
         paddingHorizontal: 30,
-        paddingBottom: 40 // Add padding for scrolling
+        paddingBottom: 40 
     },
     proIconBg: {
         width: 100,

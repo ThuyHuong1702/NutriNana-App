@@ -27,7 +27,7 @@ export default function GoalScreen() {
       case 'chuck': return 'Chef Chuck';
       case 'ninja': return 'Lady Na';
       case 'baby': return 'Baby Na';
-      default: return 'Mimi'; // Mặc định là Mimi
+      default: return 'Mimi'; 
     }
   };
 
@@ -60,7 +60,6 @@ export default function GoalScreen() {
           Bạn muốn theo dõi ăn uống để đạt được điều gì?
         </Text>
         
-        {/* 👇 3. HIỂN THỊ TÊN NHÂN VẬT Ở ĐÂY */}
         <Text style={styles.subtitle}>
           <Text style={{fontWeight: 'bold', color: '#F9A825'}}>{getCharacterName()}</Text> sẽ xây dựng kế hoạch dựa trên nhu cầu của bạn
         </Text>
@@ -125,7 +124,7 @@ const styles = StyleSheet.create({
     lineHeight: 34,
   },
   subtitle: {
-    fontSize: 15, // Tăng nhẹ cỡ chữ
+    fontSize: 15, 
     color: '#666',
     marginBottom: 40,
     lineHeight: 22,
@@ -163,7 +162,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff', 
   },
   radioDot: {
-    // Không cần dot nếu muốn giống hệt ảnh (trắng trơn)
+    //
   },
   optionText: {
     fontSize: 16,

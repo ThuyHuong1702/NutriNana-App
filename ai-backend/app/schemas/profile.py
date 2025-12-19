@@ -6,7 +6,7 @@ class OnboardingData(BaseModel):
     email: str
     nickname: str
     character_id: str
-    gender: str          # 'male' / 'female'
+    gender: str         
     age: int
     height: float        # cm
     weight: float        # kg

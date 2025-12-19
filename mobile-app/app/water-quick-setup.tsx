@@ -8,14 +8,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import axios from 'axios';
 import { auth } from '@/src/config/firebase'; 
-import { useSafeAreaInsets } from 'react-native-safe-area-context'; // 👇 Import quan trọng
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import WaterSelectionModal from '@/src/components/WaterSelectionModal';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const BACKEND_URL = 'http://192.168.1.3:8000'; 
 
-// --- HÀM CHUẨN HÓA KÍCH THƯỚC (RESPONSIVE) ---
-const scale = SCREEN_WIDTH / 375; // Dựa trên chuẩn iPhone 11
+//HÀM CHUẨN HÓA KÍCH THƯỚC
+const scale = SCREEN_WIDTH / 375; 
 const normalize = (size: number) => {
     const newSize = size * scale;
     if (Platform.OS === 'ios') {
@@ -32,7 +32,7 @@ const getImageSource = (path: string) => {
 
 export default function WaterQuickSetupScreen() {
     const router = useRouter();
-    const insets = useSafeAreaInsets(); // Lấy khoảng cách an toàn
+    const insets = useSafeAreaInsets(); 
     const [loading, setLoading] = useState(true);
     const [favorites, setFavorites] = useState<any[]>([]);
 
@@ -57,37 +57,31 @@ export default function WaterQuickSetupScreen() {
         fetchFavorites();
     }, []);
 
-    // --- TÍNH TOÁN CARD WIDTH ---
-    // Màn hình - (Padding trái phải 20*2) - (Gap giữa 15) chia 2
     const GAP = normalize(15);
     const PADDING_H = normalize(20);
     const CARD_WIDTH = (SCREEN_WIDTH - (PADDING_H * 2) - GAP) / 2;
     const [modalVisible, setModalVisible] = useState(false);
     const [editingItem, setEditingItem] = useState<any>(null);
 
-    // Khi ấn vào icon Sync hoặc thẻ -> Mở Modal để chọn món thay thế
     const handleOpenModal = (item: any) => {
         setEditingItem(item);
         setModalVisible(true);
     };
 
-    // Xử lý khi ấn Lưu trong Modal -> Gọi API Update Favorite
     const handleModalSubmit = async (drink: any, volume: number) => {
         try {
             if (!editingItem) return;
 
             const payload = {
                 uid: auth.currentUser?.uid,
-                old_w_id: editingItem.W_ID, // ID món cũ đang hiển thị trên ô đó
-                new_w_id: drink.W_ID,       // ID món mới vừa chọn trong Modal
-                new_volume: volume          // Dung tích mới
+                old_w_id: editingItem.W_ID, 
+                new_w_id: drink.W_ID,   
+                new_volume: volume         
             };
-            
-            // Gọi API cập nhật
-            // Lưu ý: Bạn cần viết API này ở Backend Python
+
             await axios.post(`${BACKEND_URL}/api/update-water-favorite`, payload);
             
-            fetchFavorites(); // Load lại danh sách ô ghi nhanh
+            fetchFavorites();
         } catch (e) {
             console.log("Error updating favorite:", e);
         }
@@ -135,7 +129,7 @@ export default function WaterQuickSetupScreen() {
                                             style={styles.cardName} 
                                             numberOfLines={2} 
                                             ellipsizeMode="tail"
-                                            maxFontSizeMultiplier={1.2} // Giới hạn phóng to chữ
+                                            maxFontSizeMultiplier={1.2}
                                         >
                                             {item.drink_name}
                                         </Text>
@@ -148,7 +142,6 @@ export default function WaterQuickSetupScreen() {
                                     </View>
                                 </View>
 
-                                {/* Icon Sync nằm bên phải */}
                                 <Ionicons name="sync-outline" size={normalize(18)} color="#666" />
                             </TouchableOpacity>
                         ))}
@@ -190,23 +183,21 @@ const styles = StyleSheet.create({
     gridContainer: {
         flexDirection: 'row', 
         flexWrap: 'wrap', 
-        // gap được xử lý inline style để đồng bộ với tính toán width
     },
     card: {
-        // width được tính toán dynamic
         backgroundColor: '#E0E0E0', 
         borderRadius: 15,
         padding: normalize(10),
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        minHeight: normalize(80), // 👇 Dùng minHeight thay vì height cứng
+        minHeight: normalize(80),
     },
     cardLeft: {
         flexDirection: 'row', 
         alignItems: 'center', 
-        flex: 1, // Để đẩy icon sync ra sát mép phải
-        paddingRight: 5 // Tránh chữ dính vào icon sync
+        flex: 1, 
+        paddingRight: 5 
     },
     cardIcon: { 
         width: normalize(32), 
@@ -214,13 +205,13 @@ const styles = StyleSheet.create({
         marginRight: normalize(8) 
     },
     textWrapper: { 
-        flex: 1 // Quan trọng: Để text tự xuống dòng nếu dài quá
+        flex: 1 
     },
     cardName: { 
         fontSize: normalize(13), 
         fontWeight: 'bold', 
         color: '#000',
-        flexWrap: 'wrap' // Cho phép xuống dòng
+        flexWrap: 'wrap' 
     },
     cardVolume: { 
         fontSize: normalize(11), 

@@ -11,16 +11,13 @@ import NumberPicker from '@/src/components/NumberPicker';
 export default function WeightScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
-  const [weightVal, setWeightVal] = useState(60); // Mặc định 60kg
+  const [weightVal, setWeightVal] = useState(60); 
 
   const handleNext = async () => {
     try {
       if (auth.currentUser) {
         await updateDoc(doc(db, 'users', auth.currentUser.uid), { weight: weightVal });
       }
-      
-      // Chuyển sang màn hình tiếp theo: Cường độ vận động (Activity)
-      // Bạn sẽ tạo file activity.tsx sau bước này
     router.push({ 
       pathname: '/(onboarding)/activity', 
       params: { ...params, weight: weightVal } 
@@ -37,8 +34,6 @@ export default function WeightScreen() {
         <TouchableOpacity onPress={() => router.back()}>
           <Ionicons name="arrow-back" size={24} color="#333" />
         </TouchableOpacity>
-        
-        {/* Thanh Progress: 5/7 tương đương khoảng 70% */}
         <View style={styles.progressBar}>
           <View style={[styles.progressFill, { width: '57%' }]} />
         </View>
@@ -58,7 +53,6 @@ export default function WeightScreen() {
         />
       </View>
 
-      {/* 4. Nút Tiếp theo */}
       <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
         <Text style={styles.btnText}>Tiếp theo</Text>
       </TouchableOpacity>

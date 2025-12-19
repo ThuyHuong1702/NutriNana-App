@@ -21,14 +21,14 @@ WebBrowser.maybeCompleteAuthSession();
 const { width, height } = Dimensions.get('window');
 
 // Tính toán kích thước tương đối
-const LOGO_WIDTH = width * 0.4; // Logo chiếm 40% chiều rộng
-const LOGO_HEIGHT = LOGO_WIDTH * 0.7; // Tỷ lệ khung hình logo (tùy chỉnh theo ảnh thật)
-const INPUT_HEIGHT = height > 700 ? 55 : 45; // Màn hình nhỏ thì input thấp hơn chút
+const LOGO_WIDTH = width * 0.4; 
+const LOGO_HEIGHT = LOGO_WIDTH * 0.7;
+const INPUT_HEIGHT = height > 700 ? 55 : 45; 
 
 export default function LoginScreen() {
   const router = useRouter();
   
-  // Hardcode redirectUri để fix lỗi Google
+  // Hardcode redirectUri 
   const redirectUri = 'https://auth.expo.io/@thuyhuong/nutrinana'; 
 
   // State
@@ -201,10 +201,9 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    paddingHorizontal: width * 0.05, // Padding ngang 5% chiều rộng màn hình
+    paddingHorizontal: width * 0.05, 
   },
-  
-  // --- Header ---
+
   headerSection: {
     alignItems: 'center',
     marginTop: height * 0.02,
@@ -224,7 +223,6 @@ const styles = StyleSheet.create({
     height: LOGO_HEIGHT,
   },
 
-  // --- Form ---
   formContainer: {
     width: '100%',
   },
@@ -266,15 +264,13 @@ const styles = StyleSheet.create({
     padding: 5,
   },
 
-  // --- Buttons ---
   loginButton: {
     backgroundColor: '#FDD835',
     borderRadius: 12,
-    height: INPUT_HEIGHT + 5, // Cao hơn input chút cho nổi bật
+    height: INPUT_HEIGHT + 5, 
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 30,
-    // Shadow nút
     ...Platform.select({
       ios: { shadowColor: "#FDD835", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.4, shadowRadius: 5 },
       android: { elevation: 4 }
@@ -291,7 +287,6 @@ const styles = StyleSheet.create({
     padding: 5,
   },
 
-  // --- Divider ---
   dividerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -309,7 +304,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 
-  // --- Google ---
   googleButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -326,7 +320,6 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
 
-  // --- Footer ---
   footer: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -338,7 +331,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   linkText: {
-    color: '#F9A825', // Màu vàng đậm hơn chút cho dễ đọc
+    color: '#F9A825',
     fontWeight: 'bold',
     fontSize: 15,
   },

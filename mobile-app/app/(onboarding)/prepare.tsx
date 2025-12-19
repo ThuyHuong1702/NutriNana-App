@@ -10,7 +10,6 @@ export default function PrepareScreen() {
   const params = useLocalSearchParams();
   const { charId } = params;
 
-  // Hàm lấy thông tin nhân vật (Ảnh + Tên)
   const getCharacter = () => {
     switch (charId) {
       case 'max': return { name: 'Max', image: require('@/assets/images/banana-muscle.jpg') };
@@ -24,7 +23,6 @@ export default function PrepareScreen() {
   const character = getCharacter();
 
   const handleNext = () => {
-    // Chuyển tiếp sang màn hình Giới tính
     router.push({ 
         pathname: '/(onboarding)/gender', 
         params: { ...params } 
@@ -34,25 +32,20 @@ export default function PrepareScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
-        
-        {/* Khung ảnh vuông xám trong thiết kế -> Thay bằng ảnh nhân vật cho sinh động */}
         <View style={styles.imagePlaceholder}>
            <Image source={character.image} style={styles.image} resizeMode="contain" />
         </View>
 
         <Text style={styles.title}>Tuyệt vời!</Text>
 
-        {/* Lời dẫn 1 */}
         <Text style={styles.description}>
           <Text style={styles.highlight}>{character.name}</Text> tin rằng bạn đã sẵn sàng cho mục tiêu đó.
         </Text>
 
-        {/* Lời dẫn 2 */}
         <Text style={styles.subDescription}>
           <Text style={styles.highlight}>{character.name}</Text> có 7 câu hỏi nhỏ để thiết lập kế hoạch đạt mục tiêu cho bạn. Cùng bắt đầu ngay nhé!
         </Text>
 
-        {/* Nút Tiếp theo */}
         <View style={styles.footer}>
           <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
             <Text style={styles.btnText}>Tiếp theo</Text>
@@ -78,12 +71,12 @@ const styles = StyleSheet.create({
   imagePlaceholder: {
     width: 200,
     height: 200,
-    backgroundColor: '#E0E0E0', // Màu xám như thiết kế
+    backgroundColor: '#E0E0E0', 
     borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 30,
-    overflow: 'hidden', // Để ảnh không tràn ra bo góc
+    overflow: 'hidden', 
   },
   image: {
     width: '80%',
@@ -111,11 +104,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   highlight: {
-    color: '#F9A825', // Màu vàng đậm tên nhân vật
+    color: '#F9A825', 
     fontWeight: 'bold',
   },
   
-  // Footer Button
   footer: {
     flex: 1,
     justifyContent: 'flex-end',

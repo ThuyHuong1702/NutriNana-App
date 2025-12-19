@@ -11,15 +11,13 @@ import NumberPicker from '@/src/components/NumberPicker';
 export default function HeightScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
-  const [heightVal, setHeightVal] = useState(170); // Mặc định 170cm
+  const [heightVal, setHeightVal] = useState(170); 
 
   const handleNext = async () => {
     try {
       if (auth.currentUser) {
         await updateDoc(doc(db, 'users', auth.currentUser.uid), { height: heightVal });
       }
-      // Chuyển sang màn hình Cân nặng (Bạn tự tạo weight.tsx tương tự nhé)
-      // Hoặc tạm thời về trang chủ nếu chưa làm xong
       router.push({ 
         pathname: '/(onboarding)/weight', 
         params: { ...params, height: heightVal } 
@@ -53,7 +51,6 @@ export default function HeightScreen() {
   );
 }
 
-// Styles y hệt file Age, bạn copy sang là được
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff', paddingHorizontal: 20 },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 10 },

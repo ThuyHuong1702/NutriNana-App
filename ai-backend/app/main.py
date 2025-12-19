@@ -29,6 +29,8 @@ app.mount("/activity_images", StaticFiles(directory="app/activity_images"), name
 
 app.mount("/drink_images", StaticFiles(directory="app/drink_images"), name="drink_images")
 
+app.mount("/uploads", StaticFiles(directory="app/uploads"), name="uploads")
+
 # Nhúng Router
 app.include_router(api_router)
 

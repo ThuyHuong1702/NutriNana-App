@@ -9,7 +9,6 @@ import { auth } from '@/src/config/firebase';
 
 const { width } = Dimensions.get('window');
 
-// 👇 Thay IP máy tính của bạn
 const BACKEND_URL = 'http://192.168.1.3:8000'; 
 
 export default function PlanScreen() {
@@ -18,32 +17,29 @@ export default function PlanScreen() {
   const [completed, setCompleted] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
-  // Animation values cho 4 thanh tiến trình
   const progress1 = useRef(new Animated.Value(0)).current;
   const progress2 = useRef(new Animated.Value(0)).current;
   const progress3 = useRef(new Animated.Value(0)).current;
   const progress4 = useRef(new Animated.Value(0)).current;
 
-  // Hàm chạy animation cho 1 thanh
   const animateProgress = (animValue: Animated.Value, duration: number) => {
     return new Promise((resolve) => {
       Animated.timing(animValue, {
         toValue: 100,
         duration: duration,
         easing: Easing.linear,
-        useNativeDriver: false, // width không hỗ trợ native driver
+        useNativeDriver: false, 
       }).start(() => resolve(true));
     });
   };
 
-  // Chạy chuỗi animation khi vào màn hình
   useEffect(() => {
     const runAnimations = async () => {
-      await animateProgress(progress1, 1000); // Bước 1: 1s
-      await animateProgress(progress2, 1500); // Bước 2: 1.5s
-      await animateProgress(progress3, 1200); // Bước 3: 1.2s
-      await animateProgress(progress4, 800);  // Bước 4: 0.8s
-      setCompleted(true); // Hiện nút bấm
+      await animateProgress(progress1, 1000);
+      await animateProgress(progress2, 1500); 
+      await animateProgress(progress3, 1200); 
+      await animateProgress(progress4, 800);  
+      setCompleted(true); 
     };
     runAnimations();
   }, []);
@@ -79,7 +75,6 @@ export default function PlanScreen() {
 
     } catch (error) {
       console.log("Lỗi lưu:", error);
-      // Vẫn cho vào trang chủ dù lỗi server (để user không bị kẹt)
       router.replace('/(onboarding)/result');
     } finally {
       setIsSaving(false);
@@ -94,8 +89,6 @@ export default function PlanScreen() {
     });
 
     const [percent, setPercent] = useState(0);
-    
-    // Lắng nghe giá trị để hiện số %
     useEffect(() => {
       const id = animValue.addListener(({ value }) => {
         setPercent(Math.round(value));
@@ -140,7 +133,6 @@ export default function PlanScreen() {
 
       </View>
 
-      {/* Nút Hoàn tất (Chỉ hiện khi chạy xong 4 thanh) */}
       <View style={styles.footer}>
         {completed && (
           <TouchableOpacity style={styles.btn} onPress={handleStart} disabled={isSaving}>
@@ -169,13 +161,13 @@ const styles = StyleSheet.create({
   
   track: { 
     height: 8, 
-    backgroundColor: '#FFF9C4', // Vàng nhạt nền
+    backgroundColor: '#FFF9C4', 
     borderRadius: 4, 
     overflow: 'hidden' 
   },
   fill: { 
     height: '100%', 
-    backgroundColor: '#FDD835', // Vàng đậm
+    backgroundColor: '#FDD835', 
     borderRadius: 4 
   },
 

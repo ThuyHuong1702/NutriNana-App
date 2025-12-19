@@ -24,13 +24,12 @@ export default function HelloScreen() {
   const character = getCharacter();
 
   useEffect(() => {
-    // ⏳ Đếm ngược 3 giây rồi chuyển sang màn hình GIỚI TÍNH
     const timer = setTimeout(() => {
       router.replace({
         pathname: '/(onboarding)/goal', 
         params: { charId, nickname }
       } as any);
-    }, 8000);
+    }, 5000);
 
     return () => clearTimeout(timer);
   }, []);
@@ -38,13 +37,10 @@ export default function HelloScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
-        
-        {/* Ảnh nhân vật */}
         <View style={styles.imageWrapper}>
           <Image source={character.image} style={styles.image} resizeMode="contain" />
         </View>
 
-        {/* Lời chào kết hợp Tên nhân vật và Tên người dùng */}
         <Text style={styles.greeting}>
           Xin chào <Text style={styles.highlight}>{nickname}</Text>!
         </Text>
@@ -74,12 +70,12 @@ const styles = StyleSheet.create({
     width: width * 0.6,
     height: width * 0.6,
     borderRadius: (width * 0.6) / 2,
-    backgroundColor: '#FFF9C4', // Nền vàng nhạt
+    backgroundColor: '#FFF9C4', 
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 40,
     borderWidth: 4,
-    borderColor: '#FDD835', // Viền vàng đậm
+    borderColor: '#FDD835', 
     // Shadow
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },

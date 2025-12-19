@@ -4,7 +4,7 @@ import {
   Image, KeyboardAvoidingView, Platform, ScrollView 
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons'; // Thư viện icon có sẵn
+import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import { registerUser } from '@/src/api/authApi';
 import { Alert, ActivityIndicator } from 'react-native';
@@ -14,7 +14,7 @@ export default function SignupScreen() {
 // 1. Thêm State để lưu dữ liệu nhập vào
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false); // Để hiện vòng xoay khi đang tải
+  const [loading, setLoading] = useState(false); 
   // Quản lý trạng thái hiện/ẩn mật khẩu
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -31,7 +31,7 @@ export default function SignupScreen() {
 
     if (result.success) {
       Alert.alert("Thành công", "Tài khoản đã được tạo! Mời bạn đăng nhập.");
-      router.replace('/(auth)/login'); // Chuyển sang trang Login
+      router.replace('/(auth)/login'); 
     } else {
       Alert.alert("Đăng ký thất bại", result.error);
     }
@@ -51,14 +51,11 @@ export default function SignupScreen() {
 
           {/* 2. Logo NutriNana */}
           <View style={styles.logoContainer}>
-             {/* Bạn nhớ thay ảnh logo thật vào đây nhé */}
             <Image 
               source={require('@/assets/images/auth_logo.jpg')} 
               style={styles.logo} 
               resizeMode="contain"
             />
-            {/* Nếu chưa có ảnh logo thì tạm thời dùng Text này */}
-            {/* <Text style={styles.logoText}>NutriNana 🍌</Text> */}
           </View>
 
           {/* 3. Form Đăng Ký */}
@@ -70,7 +67,7 @@ export default function SignupScreen() {
               style={styles.input} 
               placeholder="Nhập email..."
               value={email}
-              onChangeText={setEmail} // Lưu chữ vào state
+              onChangeText={setEmail} 
               autoCapitalize="none"
               placeholderTextColor="#999"
             />
@@ -84,7 +81,7 @@ export default function SignupScreen() {
                 onChangeText={setPassword}
                 placeholder="Ít nhất 8 ký tự..." 
                 placeholderTextColor="#999"
-                secureTextEntry={!showPassword} // Ẩn hiện pass
+                secureTextEntry={!showPassword} 
               />
               <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
                 <Ionicons 
@@ -95,7 +92,6 @@ export default function SignupScreen() {
               </TouchableOpacity>
             </View>
 
-            {/* Nhập lại mật khẩu */}
             <Text style={styles.label}>Nhập lại mật khẩu</Text>
             <View style={styles.passwordContainer}>
               <TextInput 
@@ -113,7 +109,6 @@ export default function SignupScreen() {
               </TouchableOpacity>
             </View>
 
-            {/* Nút Đăng Ký */}
             <TouchableOpacity style={styles.registerButton} onPress={handleSignup} disabled={loading}
             >
             {loading ? (
@@ -123,13 +118,11 @@ export default function SignupScreen() {
                 )}
             </TouchableOpacity>
 
-            {/* Hoặc tiếp tục với Google */}
             <TouchableOpacity style={styles.googleButton}>
               <Ionicons name="logo-google" size={20} color="#333" style={{marginRight: 10}} />
               <Text style={styles.googleButtonText}>Tiếp tục với Google</Text>
             </TouchableOpacity>
 
-            {/* Footer chuyển sang đăng nhập */}
             <View style={styles.footer}>
               <Text style={styles.textGray}>Bạn đã có tài khoản? </Text>
               <TouchableOpacity onPress={() => router.push('/(auth)/login')}>
@@ -165,7 +158,7 @@ const styles = StyleSheet.create({
   },
   logo: {
     width: 150,
-    height: 100, // Chỉnh lại cho khớp với ảnh của bạn
+    height: 100, 
   },
   logoText: {
     fontSize: 32,
@@ -183,7 +176,7 @@ const styles = StyleSheet.create({
     marginTop: 15,
   },
   input: {
-    backgroundColor: '#F3F0E3', // Màu be nhạt giống thiết kế
+    backgroundColor: '#F3F0E3', 
     borderRadius: 12,
     paddingVertical: 12,
     paddingHorizontal: 15,
@@ -206,7 +199,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   registerButton: {
-    backgroundColor: '#FDD835', // Màu vàng chủ đạo
+    backgroundColor: '#FDD835', 
     borderRadius: 12,
     paddingVertical: 15,
     alignItems: 'center',

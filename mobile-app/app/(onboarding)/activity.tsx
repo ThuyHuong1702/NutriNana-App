@@ -38,11 +38,10 @@ export default function ActivityScreen() {
     setLoading(true);
 
     try {
-      // Chỉ lưu lựa chọn vào Firebase (chưa tính toán)
       if (auth.currentUser) {
         await updateDoc(doc(db, 'users', auth.currentUser.uid), {
           activityLevel: selectedId,
-          isOnboardingCompleted: true // Đánh dấu hoàn tất
+          isOnboardingCompleted: true 
         });
       }
     router.push({ 
@@ -66,7 +65,6 @@ export default function ActivityScreen() {
           <Ionicons name="arrow-back" size={24} color="#333" />
         </TouchableOpacity>
         
-        {/* Progress 5/7 ~ 71% */}
         <View style={styles.progressBar}><View style={[styles.progressFill, { width: '71%' }]} /></View>
         <Text style={styles.stepText}>5/7</Text>
       </View>
@@ -87,7 +85,7 @@ export default function ActivityScreen() {
               key={item.id} 
               style={[
                 styles.card, 
-                isSelected && styles.selectedCard // Đổi màu nền/viền khi chọn
+                isSelected && styles.selectedCard 
               ]}
               onPress={() => setSelectedId(item.id)}
               activeOpacity={0.9}
@@ -152,14 +150,14 @@ const styles = StyleSheet.create({
   card: { 
     borderRadius: 12, 
     borderWidth: 1.5, 
-    borderColor: '#EEE', // Viền xám mặc định cho nhẹ nhàng (giống ảnh)
+    borderColor: '#EEE', 
     marginBottom: 15,
     backgroundColor: '#fff',
     padding: 15
   },
   selectedCard: { 
-    backgroundColor: '#FFFDE7', // Nền vàng nhạt
-    borderColor: '#FDD835'      // Viền vàng đậm
+    backgroundColor: '#FFFDE7',
+    borderColor: '#FDD835'      
   },
   
   cardContent: { flexDirection: 'row', alignItems: 'flex-start' },
@@ -167,7 +165,7 @@ const styles = StyleSheet.create({
   // Radio Button Styles
   radioCircle: { 
     width: 20, height: 20, borderRadius: 10, borderWidth: 2, 
-    borderColor: '#FDD835', // Luôn viền vàng
+    borderColor: '#FDD835', 
     marginRight: 15, marginTop: 2, 
     justifyContent: 'center', alignItems: 'center', 
     backgroundColor: '#fff' 
@@ -183,7 +181,7 @@ const styles = StyleSheet.create({
   // Text Styles
   textWrapper: { flex: 1 },
   cardTitle: { fontSize: 16, fontWeight: 'bold', color: '#333', marginBottom: 4 },
-  selectedText: { color: '#F9A825' }, // Chữ tiêu đề vàng khi chọn
+  selectedText: { color: '#F9A825' },
   cardDesc: { fontSize: 13, color: '#888', lineHeight: 18 },
 
   // Footer

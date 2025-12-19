@@ -61,7 +61,7 @@ export default function WaterDetailScreen() {
     const [isEditing, setIsEditing] = useState(false);
     const player = useAudioPlayer(require('@/assets/sounds/water_drop.mp3'));
       const playWaterSound = () => {
-        console.log("Status player:", player); // 👇 In ra xem player có null không
+        console.log("Status player:", player); 
         if (player) {
             console.log("Đang phát nhạc...");
             player.seekTo(0);
@@ -88,14 +88,13 @@ export default function WaterDetailScreen() {
     const [totalWater, setTotalWater] = useState(0);
     const [showAllLogs, setShowAllLogs] = useState(false);
 
-    // 👇 Hàm đổi ngày (Cộng/Trừ)
     const handleChangeDate = (days: number) => {
         const newDate = new Date(selectedDate);
         newDate.setDate(selectedDate.getDate() + days);
         setSelectedDate(newDate);
     };
 
-    // 👇 Cập nhật trạng thái isToday mỗi khi selectedDate thay đổi
+    // Cập nhật trạng thái isToday mỗi khi selectedDate thay đổi
     useEffect(() => {
         setIsToday(isSameDay(selectedDate, new Date()));
     }, [selectedDate]);
@@ -106,7 +105,6 @@ export default function WaterDetailScreen() {
                 const uid = auth.currentUser?.uid;
                 if (!uid) return;
 
-                // Lấy ngày từ state selectedDate thay vì luôn lấy hôm nay
                 const dateStr = formatDateForAPI(selectedDate);
 
                 const [favRes, logRes] = await Promise.all([
@@ -155,7 +153,7 @@ export default function WaterDetailScreen() {
     const percentage = Math.min((totalWater / TARGET) * 100, 100);
     const visibleLogs = showAllLogs ? logs : logs.slice(0, 3);
 
-    // 2. Viết hàm xử lý nút Back mới
+    // 2. Viết hàm xử lý nút Back
     const handleBack = () => {
         router.dismissAll();
         router.navigate({ 
@@ -166,35 +164,25 @@ export default function WaterDetailScreen() {
         });
     };
 
-    // 1. Giá trị chia sẻ cho chiều cao (Bắt đầu từ 0 hoặc percentage hiện tại)
-    // Chúng ta dùng sharedValue để Reanimated có thể điều khiển nó ở luồng UI
     const animatedHeight = useSharedValue(percentage);
-
-    // 2. Giá trị chia sẻ cho độ nghiêng (Wobble) - tạo hiệu ứng sóng sánh
     const waveWobble = useSharedValue(0);
 
-    // 3. Style động cho View mực nước
     const animatedWaterStyle = useAnimatedStyle(() => {
         return {
-            // Chiều cao sẽ thay đổi mượt mà
             height: `${animatedHeight.value}%`,
-            // Hiệu ứng nghiêng nhẹ
             transform: [
-                // Xoay nhẹ quanh gốc dưới cùng để tạo cảm giác sóng sánh
                 { rotateZ: `${waveWobble.value}deg` }, 
-                // Dịch chuyển nhẹ để bù trừ cho việc xoay, giữ đáy nước ổn định hơn
                  { translateX: waveWobble.value * 1.5 } 
             ],
         };
     });
-    // 👇 2. HÀM XÓA NƯỚC
+    //HÀM XÓA NƯỚC
     const handleDeleteLog = async (logId: number) => {
         try {
             // Gọi API xóa
             const res = await axios.delete(`${BACKEND_URL}/api/delete-water-log/${logId}`);
             
             if (res.data.success) {
-                // Xóa thành công -> Load lại dữ liệu để cập nhật lại tổng nước và cái cốc
                 fetchData(); 
             } else {
                 Alert.alert("Lỗi", "Không thể xóa bản ghi này.");
@@ -207,7 +195,6 @@ export default function WaterDetailScreen() {
 
     const [modalVisible, setModalVisible] = useState(false);
 
-    // Xử lý khi ấn nút Ghi đồ uống -> Mở Modal
     const handleOpenModal = () => {
         setModalVisible(true);
     };
@@ -228,7 +215,7 @@ export default function WaterDetailScreen() {
             
             if (res.data.success) {
                 playWaterSound();
-                fetchData(); // Load lại màn hình
+                fetchData(); 
             }
         } catch (e) {
             console.log("Error logging from modal:", e);
@@ -237,10 +224,8 @@ export default function WaterDetailScreen() {
 
     // 4. Kích hoạt hoạt ảnh mỗi khi "percentage" thay đổi
     useEffect(() => {
-        // A. Hiệu ứng dâng nước (Spring - Nảy nhẹ)
         animatedHeight.value = withSpring(percentage, { damping: 15, stiffness: 90 });
 
-        // B. Hiệu ứng sóng sánh (Wobble Sequence)
         if (percentage > 0) {
             waveWobble.value = withSequence(
                 withTiming(3, { duration: 150, easing: Easing.ease }),
@@ -259,11 +244,10 @@ export default function WaterDetailScreen() {
                     <Ionicons name="arrow-back" size={24} color="#333" />
                 </TouchableOpacity>
 
-                {/* 👇 DATE BADGE CÓ NÚT NEXT/PREV */}
                 <View style={styles.dateBadge}>
                     <TouchableOpacity 
                         hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
-                        onPress={() => handleChangeDate(-1)} // Lùi 1 ngày
+                        onPress={() => handleChangeDate(-1)}
                     >
                         <Ionicons name="caret-back-outline" size={16} color="#333" />
                     </TouchableOpacity>
@@ -272,16 +256,15 @@ export default function WaterDetailScreen() {
                         {isToday ? "Hôm nay" : formatDateForDisplay(selectedDate)}
                     </Text>
 
-                    {/* Logic: Nếu là hôm nay thì disable nút Next và đổi màu xám */}
                     <TouchableOpacity 
                         hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
-                        onPress={() => handleChangeDate(1)} // Tiến 1 ngày
+                        onPress={() => handleChangeDate(1)} 
                         disabled={isToday} 
                     >
                         <Ionicons 
                             name="caret-forward-outline" 
                             size={16} 
-                            color={isToday ? "#C7C7CC" : "#333"} // Màu xám nếu disable
+                            color={isToday ? "#C7C7CC" : "#333"}
                         />
                     </TouchableOpacity>
                 </View>
@@ -301,7 +284,7 @@ export default function WaterDetailScreen() {
                 contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 100 }]}
                 showsVerticalScrollIndicator={false}
             >
-                {/* Visual Cup - Responsive */}
+                {/* Visual Cup */}
                 <View style={styles.cupContainer}>
                    <View style={styles.cupOutline}>
                         <Animated.View 
@@ -439,7 +422,6 @@ const styles = StyleSheet.create({
     },
     iconButton: { padding: 5 },
     
-    // 👇 UPDATE STYLE DATE BADGE
     dateBadge: { 
         flexDirection: 'row', 
         alignItems: 'center', 
