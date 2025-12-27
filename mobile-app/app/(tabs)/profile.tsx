@@ -9,9 +9,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import axios from 'axios';
 import { auth } from '@/src/config/firebase'; 
 import * as ImagePicker from 'expo-image-picker';
+import { BACKEND_URL } from '@/src/config/apiConfig';
 
 
-const BACKEND_URL = 'http://192.168.1.3:8000'; 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 // --- SIZE NORMALIZATION FUNCTION (RESPONSIVE) ---

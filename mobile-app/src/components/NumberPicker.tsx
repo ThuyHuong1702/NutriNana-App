@@ -3,8 +3,8 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity, Dimensions } from '
 import { useRef, useState, useEffect } from 'react';
 
 const { width } = Dimensions.get('window');
-const ITEM_HEIGHT = 60; // Chiều cao mỗi dòng số
-const VISIBLE_ITEMS = 5; // Số dòng hiển thị
+const ITEM_HEIGHT = 60; 
+const VISIBLE_ITEMS = 5;
 
 interface Props {
   min: number;
@@ -15,14 +15,10 @@ interface Props {
 }
 
 export default function NumberPicker({ min, max, initialValue, unit, onValueChange }: Props) {
-  // Tạo mảng số từ min đến max
   const data = Array.from({ length: max - min + 1 }, (_, i) => min + i);
   const [selected, setSelected] = useState(initialValue);
-  
-  // Ref để điều khiển cuộn
   const flatListRef = useRef<FlatList>(null);
 
-  // Cuộn tới vị trí mặc định lúc đầu
   useEffect(() => {
     const index = initialValue - min;
     setTimeout(() => {
@@ -42,7 +38,6 @@ export default function NumberPicker({ min, max, initialValue, unit, onValueChan
 
   return (
     <View style={styles.container}>
-      {/* Vạch chọn ở giữa (Highlight) */}
       <View style={styles.highlightLine}>
         <Text style={styles.unitText}>{unit}</Text>
       </View>
@@ -52,10 +47,10 @@ export default function NumberPicker({ min, max, initialValue, unit, onValueChan
         data={data}
         keyExtractor={(item) => item.toString()}
         showsVerticalScrollIndicator={false}
-        snapToInterval={ITEM_HEIGHT} // Bắt dính từng dòng
+        snapToInterval={ITEM_HEIGHT} 
         decelerationRate="fast"
         contentContainerStyle={{
-          paddingVertical: (ITEM_HEIGHT * (VISIBLE_ITEMS - 1)) / 2 // Đệm để số đầu/cuối ra giữa
+          paddingVertical: (ITEM_HEIGHT * (VISIBLE_ITEMS - 1)) / 2 
         }}
         onMomentumScrollEnd={handleScroll}
         onScroll={handleScroll}
@@ -100,12 +95,12 @@ const styles = StyleSheet.create({
   },
   highlightLine: {
     position: 'absolute',
-    top: ITEM_HEIGHT * 2, // Căn giữa (2 dòng trên, 2 dòng dưới)
+    top: ITEM_HEIGHT * 2, 
     width: width * 0.5,
     height: ITEM_HEIGHT,
-    backgroundColor: '#FFF9C4', // Màu vàng nhạt nền
+    backgroundColor: '#FFF9C4', 
     borderRadius: 15,
-    zIndex: -1, // Nằm dưới text
+    zIndex: -1, 
     justifyContent: 'center',
     alignItems: 'flex-end',
     paddingRight: 20,

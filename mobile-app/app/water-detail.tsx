@@ -22,9 +22,9 @@ import Animated, {
 import WaterSelectionModal from '@/src/components/WaterSelectionModal';
 import { useFocusEffect } from 'expo-router';
 import { useCallback } from 'react';
+import { BACKEND_URL } from '@/src/config/apiConfig';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const BACKEND_URL = 'http://192.168.1.3:8000'; 
 
 // 1. Helper Format ngày cho API (YYYY-MM-DD)
 const formatDateForAPI = (date: Date) => {

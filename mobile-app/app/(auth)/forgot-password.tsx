@@ -13,8 +13,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 // 1. LẤY KÍCH THƯỚC MÀN HÌNH
 const { width, height } = Dimensions.get('window');
 
-const LOGO_WIDTH = width * 0.35;
-const LOGO_HEIGHT = LOGO_WIDTH * 0.7; 
+const LOGO_WIDTH = width * 0.6; 
+const LOGO_HEIGHT = LOGO_WIDTH * 0.6;
 const INPUT_HEIGHT = height > 700 ? 55 : 45; 
 
 export default function ForgotPasswordScreen() {

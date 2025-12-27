@@ -23,17 +23,13 @@ export const ListingSearchBar = ({ placeholder, value, onChangeText }: Props) =>
           value={value}
           onChangeText={onChangeText}
           returnKeyType="search"
-          // Cho phép text tự scale theo hệ thống (quan trọng cho Accessibility)
           allowFontScaling={true} 
-          // Chỉ 1 dòng
           multiline={false}
         />
 
-        {/* Clear Button */}
         {value.length > 0 && (
           <TouchableOpacity 
             onPress={() => onChangeText("")} 
-            // Tăng vùng chạm cho nút xóa dễ bấm hơn
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             style={styles.clearBtn}
           >
@@ -49,7 +45,7 @@ const styles = StyleSheet.create({
   searchContainer: { 
     paddingHorizontal: 16, 
     marginBottom: 8,
-    width: '100%', // Đảm bảo chiếm hết chiều ngang
+    width: '100%', 
   },
   searchBox: { 
     flexDirection: 'row', 
@@ -57,9 +53,6 @@ const styles = StyleSheet.create({
     borderRadius: 12, 
     paddingHorizontal: 12, 
     backgroundColor: '#F0F0F0',
-    
-    // 1. QUAN TRỌNG: Thay height: 48 bằng minHeight + Padding
-    // Để khi chữ to lên, hộp sẽ tự cao lên
     minHeight: 48, 
     paddingVertical: 6, 
   },
@@ -70,15 +63,10 @@ const styles = StyleSheet.create({
     flex: 1, 
     fontSize: 16, 
     color: '#333', 
-    
-    // 2. Bỏ height: '100%' vì cha nó không còn height cố định
-    // Dùng minHeight để đảm bảo vùng chạm tốt
     minHeight: 40,
-    
-    // 3. Fix lỗi padding mặc định trên Android làm lệch chữ
     paddingVertical: 0, 
     ...Platform.select({
-      android: { textAlignVertical: 'center' } // Căn giữa dọc chuẩn cho Android
+      android: { textAlignVertical: 'center' } 
     })
   },
   clearBtn: {

@@ -8,8 +8,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import axios from 'axios';
+import { BACKEND_URL } from '@/src/config/apiConfig';
 
-const BACKEND_URL = 'http://192.168.1.3:8000'; 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 const scale = SCREEN_WIDTH / 375;

@@ -256,7 +256,7 @@ export const FOOD_DICTIONARY: Record<string, string> = {
   "thit_bo_cau_ra_rang": "Thịt bồ câu",
   "thit_ga_ta": "Thịt gà ta",
   "thit_ga_tay": "Thịt gà tây",
-  "thit_lon_nua_nac_nua_mo": "Thịt lợn ba chỉ",
+  "thit_lon_nua_nac_nua_mo": "Thịt lợn nửa nạc, nửa mỡ",
   "thit_trau": "Thịt trâu",
   "thit_vit": "Thịt vịt",
   "tia_to": "Tía tô",

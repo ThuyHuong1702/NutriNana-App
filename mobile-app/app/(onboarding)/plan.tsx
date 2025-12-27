@@ -6,11 +6,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 import { auth } from '@/src/config/firebase';
+import { BACKEND_URL } from '@/src/config/apiConfig';
 
 const { width } = Dimensions.get('window');
-
-const BACKEND_URL = 'http://192.168.1.3:8000'; 
-
 export default function PlanScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
@@ -62,7 +60,7 @@ export default function PlanScreen() {
         activity_level: parseFloat(params.activityLevel as string) || 1.2,
         goal_type: params.goal as string || "maintain",
         target_weight: parseFloat(params.targetWeight as string) || 50,
-        weight_speed: parseFloat(params.weightSpeed as string) || 0.5
+        weight_speed: parseFloat(params.weightSpeed as string) || 0
       };
 
       console.log("🚀 Đang gửi dữ liệu:", payload);
@@ -81,7 +79,6 @@ export default function PlanScreen() {
     }
   };
 
-  // Component thanh tiến trình con
   const ProgressBarItem = ({ label, animValue }: { label: string, animValue: Animated.Value }) => {
     const widthInterpolated = animValue.interpolate({
       inputRange: [0, 100],

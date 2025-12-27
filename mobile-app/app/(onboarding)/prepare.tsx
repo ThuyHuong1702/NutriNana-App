@@ -43,7 +43,7 @@ export default function PrepareScreen() {
         </Text>
 
         <Text style={styles.subDescription}>
-          <Text style={styles.highlight}>{character.name}</Text> có 7 câu hỏi nhỏ để thiết lập kế hoạch đạt mục tiêu cho bạn. Cùng bắt đầu ngay nhé!
+          <Text style={styles.highlight}>{character.name}</Text> có một số câu hỏi nho nhỏ để thiết lập kế hoạch đạt mục tiêu cho bạn. Cùng bắt đầu ngay nhé!
         </Text>
 
         <View style={styles.footer}>
@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
   imagePlaceholder: {
     width: 200,
     height: 200,
-    backgroundColor: '#E0E0E0', 
+    backgroundColor: '#4CAF50', 
     borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
@@ -79,8 +79,9 @@ const styles = StyleSheet.create({
     overflow: 'hidden', 
   },
   image: {
-    width: '80%',
-    height: '80%',
+    width: '98%',
+    height: '98%',
+    borderRadius: 12,
   },
   title: {
     fontSize: 22,

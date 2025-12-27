@@ -9,8 +9,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ListingLayout } from '@/src/components/listing/ListingLayout';
 import FoodModal from '@/src/components/FoodModal';
 import CartTrayModal from '@/src/components/CartTrayModal'; 
+import { BACKEND_URL } from '@/src/config/apiConfig';
 
-const BACKEND_URL = 'http://192.168.1.3:8000'; 
 const FOOD_CATEGORIES = [
   "Phổ biến", "Gần đây", "Yêu thích", "Tự tạo", "Kế hoạch", 
   "Cơm phần", "Món mặn", "Đồ ăn liền", "Cháo", "Canh", 

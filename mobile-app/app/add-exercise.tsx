@@ -8,8 +8,8 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 
 import { ListingLayout } from '@/src/components/listing/ListingLayout';
 import ActivityModal from '@/src/components/ActivityModal';
+import { BACKEND_URL } from '@/src/config/apiConfig';
 
-const BACKEND_URL = 'http://192.168.1.3:8000'; 
 const EXERCISE_CATEGORIES = ["Phổ biến", "Gần đây", "Yêu thích"];
 
 export default function AddExerciseScreen() {

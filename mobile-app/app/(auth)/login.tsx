@@ -1,4 +1,4 @@
-//app/(auth)/login.tsx
+// app/(auth)/login.tsx
 import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
 import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
@@ -12,63 +12,117 @@ import {
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { loginUser } from '@/src/api/authApi';
-import { makeRedirectUri } from 'expo-auth-session';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { BACKEND_URL, GOOGLE_CLIENT_ID, GOOGLE_REDIRECT_URI } from '@/src/config/apiConfig';
 
 WebBrowser.maybeCompleteAuthSession();
 
-// 1. LẤY KÍCH THƯỚC MÀN HÌNH
 const { width, height } = Dimensions.get('window');
 
-// Tính toán kích thước tương đối
-const LOGO_WIDTH = width * 0.4; 
-const LOGO_HEIGHT = LOGO_WIDTH * 0.7;
+const LOGO_WIDTH = width * 0.6; 
+const LOGO_HEIGHT = LOGO_WIDTH * 0.6;
 const INPUT_HEIGHT = height > 700 ? 55 : 45; 
 
 export default function LoginScreen() {
   const router = useRouter();
-  
-  // Hardcode redirectUri 
-  const redirectUri = 'https://auth.expo.io/@thuyhuong/nutrinana'; 
 
-  // State
+  // State dữ liệu
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  
+  // State lỗi (Validation)
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  // Cấu hình Google
   const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
-    clientId: '756875053212-m5fp0ld9dc0pa399a88salfokde83fjf.apps.googleusercontent.com',
-    redirectUri: redirectUri, 
+    clientId: GOOGLE_CLIENT_ID,
+    redirectUri: GOOGLE_REDIRECT_URI, 
   });
+
+  const checkProfileAndNavigate = async (uid: string) => {
+    try {
+      console.log("Checking profile for:", uid);
+      const response = await fetch(`${BACKEND_URL}/api/get-profile/${uid}`);
+      const data = await response.json();
+
+      if (data.success && data.data) {
+        router.replace('/(tabs)'); 
+      } else {
+        router.replace('/(onboarding)/character');
+      }
+    } catch (error) {
+      console.error("Error checking profile:", error);
+      Alert.alert("Lỗi kết nối", "Không thể kiểm tra hồ sơ. Vui lòng thử lại.");
+    }
+  };
 
   useEffect(() => {
     if (response?.type === 'success') {
       const { id_token } = response.params;
       const credential = GoogleAuthProvider.credential(id_token);
+      setLoading(true);
+
       signInWithCredential(auth, credential)
-        .then((userCredential) => {
-          console.log("Google Sign-In Success:", userCredential.user.email);
-          router.replace('/(onboarding)/character'); 
+        .then(async (userCredential) => {
+          await checkProfileAndNavigate(userCredential.user.uid);
         })
         .catch((error) => {
-          console.log("Google Sign-In Error:", error);
           Alert.alert("Lỗi", "Đăng nhập Google thất bại: " + error.message);
+        })
+        .finally(() => {
+          setLoading(false);
         });
     }
   }, [response]);
 
+
+  const isValidEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
   const handleLogin = async () => {
-    if (!email || !password) return;
+
+    setEmailError('');
+    setPasswordError('');
+    let isValid = true;
+
+    if (!email.trim()) {
+      setEmailError('Vui lòng nhập email.');
+      isValid = false;
+    } else if (!isValidEmail(email)) {
+      setEmailError('Email không đúng định dạng (ví dụ: abc@gmail.com).');
+      isValid = false;
+    }
+
+    if (!password) {
+      setPasswordError('Vui lòng nhập mật khẩu.');
+      isValid = false;
+    } else if (password.length < 6) {
+      setPasswordError('Mật khẩu phải có ít nhất 6 ký tự.');
+      isValid = false;
+    }
+
+    if (!isValid) return;
+
     setLoading(true);
     const result = await loginUser(email, password);
-    setLoading(false);
 
     if (result.success) {
-      router.replace('/(onboarding)/character');
+      const currentUser = auth.currentUser;
+      if (currentUser) {
+        await checkProfileAndNavigate(currentUser.uid);
+      } else {
+        setLoading(false);
+        router.replace('/(onboarding)/character');
+      }
     } else {
-      Alert.alert("Lỗi đăng nhập", "Sai email hoặc mật khẩu!");
+      setLoading(false);
+
+      Alert.alert("Đăng nhập thất bại", "Email hoặc mật khẩu không chính xác.");
     }
   };
 
@@ -85,7 +139,7 @@ export default function LoginScreen() {
         >
           <View style={styles.container}>
             
-            {/* Header: Nút Back & Logo */}
+            {/* Header */}
             <View style={styles.headerSection}>
               <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
                 <Ionicons name="arrow-back" size={28} color="#333" />
@@ -103,25 +157,38 @@ export default function LoginScreen() {
             {/* Form */}
             <View style={styles.formContainer}>
               
-              {/* Email */}
+              {/* --- EMAIL --- */}
               <Text style={styles.label}>E-mail</Text>
               <TextInput 
-                style={styles.input} 
+                style={[
+                  styles.input, 
+                  emailError ? styles.inputError : null
+                ]} 
                 value={email}
-                onChangeText={setEmail}
+                onChangeText={(text) => {
+                  setEmail(text);
+                  if (emailError) setEmailError('');
+                }}
                 autoCapitalize="none"
                 placeholder="Nhập email của bạn..." 
                 placeholderTextColor="#999"
                 keyboardType="email-address"
               />
 
-              {/* Mật khẩu */}
+              {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
+
               <Text style={styles.label}>Mật khẩu</Text>
-              <View style={styles.passwordContainer}>
+              <View style={[
+                styles.passwordContainer,
+                passwordError ? styles.inputError : null 
+              ]}>
                 <TextInput 
                   style={styles.passwordInput} 
                   value={password}
-                  onChangeText={setPassword}
+                  onChangeText={(text) => {
+                    setPassword(text);
+                    if (passwordError) setPasswordError(''); 
+                  }}
                   placeholder="Nhập mật khẩu..." 
                   placeholderTextColor="#999"
                   secureTextEntry={!showPassword}
@@ -137,8 +204,9 @@ export default function LoginScreen() {
                   />
                 </TouchableOpacity>
               </View>
+   
+              {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
 
-              {/* Nút Đăng Nhập */}
               <TouchableOpacity style={styles.loginButton} onPress={handleLogin} disabled={loading}>
                 {loading ? (
                   <ActivityIndicator color="#333" />
@@ -147,7 +215,6 @@ export default function LoginScreen() {
                 )}
               </TouchableOpacity>
 
-              {/* Quên mật khẩu */}
               <TouchableOpacity 
                 style={styles.forgotPassword} 
                 onPress={() => router.push('/(auth)/forgot-password')}
@@ -155,26 +222,21 @@ export default function LoginScreen() {
                 <Text style={styles.textGray}>Quên mật khẩu?</Text>
               </TouchableOpacity>
 
-              {/* Divider */}
               <View style={styles.dividerContainer}>
                 <View style={styles.dividerLine} />
                 <Text style={styles.dividerText}>HOẶC</Text>
                 <View style={styles.dividerLine} />
               </View>
 
-              {/* Google Button */}
               <TouchableOpacity 
                 style={styles.googleButton} 
                 disabled={!request}
-                onPress={() => {
-                  promptAsync(); 
-                }} 
+                onPress={() => { promptAsync(); }} 
               >
                 <Ionicons name="logo-google" size={20} color="#333" style={{marginRight: 10}} />
                 <Text style={styles.googleButtonText}>Tiếp tục với Google</Text>
               </TouchableOpacity>
 
-              {/* Footer */}
               <View style={styles.footer}>
                 <Text style={styles.textGray}>Bạn chưa có tài khoản? </Text>
                 <TouchableOpacity onPress={() => router.push('/(auth)/signup')}>
@@ -191,6 +253,7 @@ export default function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
+
   safeArea: {
     flex: 1,
     backgroundColor: '#fff',
@@ -203,7 +266,6 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: width * 0.05, 
   },
-
   headerSection: {
     alignItems: 'center',
     marginTop: height * 0.02,
@@ -222,7 +284,6 @@ const styles = StyleSheet.create({
     width: LOGO_WIDTH,
     height: LOGO_HEIGHT,
   },
-
   formContainer: {
     width: '100%',
   },
@@ -264,6 +325,18 @@ const styles = StyleSheet.create({
     padding: 5,
   },
 
+  inputError: {
+    borderColor: '#FF5252', 
+    borderWidth: 1.5,
+  },
+  errorText: {
+    color: '#FF5252',
+    fontSize: 13,
+    marginTop: 5,
+    marginBottom: 5,
+    marginLeft: 5,
+  },
+
   loginButton: {
     backgroundColor: '#FDD835',
     borderRadius: 12,
@@ -286,7 +359,6 @@ const styles = StyleSheet.create({
     marginTop: 15,
     padding: 5,
   },
-
   dividerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -303,7 +375,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: 'bold',
   },
-
   googleButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -319,7 +390,6 @@ const styles = StyleSheet.create({
     color: '#333',
     fontWeight: '500',
   },
-
   footer: {
     flexDirection: 'row',
     justifyContent: 'center',

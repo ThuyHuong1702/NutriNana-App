@@ -1,4 +1,4 @@
-//app/(onboarding)/activity.tsx
+// app/(onboarding)/activity.tsx
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, ActivityIndicator } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
@@ -17,12 +17,12 @@ const ACTIVITIES = [
 export default function ActivityScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
-  const { charId } = params;
+  // Lấy goal và weight từ params để xử lý logic
+  const { charId, goal, weight } = params;
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  // Lấy tên nhân vật để hiện ở Subtitle
   const getCharacterName = () => {
     switch (charId) {
       case 'max': return 'Max';
@@ -44,148 +44,129 @@ export default function ActivityScreen() {
           isOnboardingCompleted: true 
         });
       }
-    router.push({ 
-      pathname: '/(onboarding)/target-weight', 
-      params: { ...params, activityLevel: selectedId } 
-    } as any);
+
+      // --- LOGIC PHÂN LUỒNG QUAN TRỌNG ---
+      if (goal === 'maintain') {
+        // [TRƯỜNG HỢP MAINTAIN]:
+        // 1. Nhảy cóc qua TargetWeight
+        // 2. Chuyển thẳng đến Plan
+        // 3. Gán targetWeight = cân nặng hiện tại (weight)
+        // 4. Gán weightSpeed = 0
+        router.push({ 
+          pathname: '/(onboarding)/plan', 
+          params: { 
+            ...params, 
+            activityLevel: selectedId,
+            targetWeight: weight, // Target = Current
+            weightSpeed: 0 
+          } 
+        } as any);
+      } else {
+        // [TRƯỜNG HỢP GAIN / LOSE]:
+        // Đi tiếp đến màn chọn Cân nặng mục tiêu
+        router.push({ 
+          pathname: '/(onboarding)/target-weight', 
+          params: { 
+            ...params, 
+            activityLevel: selectedId 
+          } 
+        } as any);
+      }
 
     } catch (error) {
       console.log(error);
+      Alert.alert("Lỗi", "Không thể lưu dữ liệu.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      
-      {/* 1. Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()}>
-          <Ionicons name="arrow-back" size={24} color="#333" />
-        </TouchableOpacity>
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
         
-        <View style={styles.progressBar}><View style={[styles.progressFill, { width: '71%' }]} /></View>
-        <Text style={styles.stepText}>5/7</Text>
-      </View>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+            <Ionicons name="arrow-back" size={24} color="#333" />
+          </TouchableOpacity>
+        </View>
 
-      {/* 2. Tiêu đề & Subtitle */}
-      <Text style={styles.title}>Thói quen vận động của bạn ở mức độ nào?</Text>
-      
-      <Text style={styles.subtitle}>
-        <Text style={{fontWeight: 'bold', color: '#F9A825'}}>{getCharacterName()}</Text> sẽ đưa ra khuyến nghị chính xác nhất dựa trên mức vận động thực tế
-      </Text>
-
-      {/* 3. Danh sách lựa chọn */}
-      <ScrollView contentContainerStyle={styles.listContainer} showsVerticalScrollIndicator={false}>
-        {ACTIVITIES.map((item) => {
-          const isSelected = selectedId === item.id;
-          return (
-            <TouchableOpacity 
-              key={item.id} 
-              style={[
-                styles.card, 
-                isSelected && styles.selectedCard 
-              ]}
-              onPress={() => setSelectedId(item.id)}
-              activeOpacity={0.9}
-            >
-              <View style={styles.cardContent}>
-                
-                {/* Radio Button */}
-                <View style={[styles.radioCircle, isSelected && styles.selectedRadio]}>
-                  {isSelected && <View style={styles.radioDot} />}
-                </View>
-                
-                {/* Text Content */}
-                <View style={styles.textWrapper}>
-                  <Text style={[styles.cardTitle, isSelected && styles.selectedText]}>
-                    {item.label}
-                  </Text>
-                  <Text style={styles.cardDesc}>
-                    {item.desc}
-                  </Text>
-                </View>
-
-              </View>
-            </TouchableOpacity>
-          );
-        })}
-      </ScrollView>
-
-      {/* 4. Footer Button */}
-      <View style={styles.footer}>
-        <TouchableOpacity 
-          style={[styles.nextButton, !selectedId && styles.disabledButton]} 
-          onPress={handleNext}
-          disabled={!selectedId || loading}
+        <ScrollView 
+          contentContainerStyle={styles.scrollContent} 
+          showsVerticalScrollIndicator={false}
         >
-          {loading ? (
-            <ActivityIndicator color="#333" />
-          ) : (
-            <Text style={[styles.btnText, !selectedId && {color: '#999'}]}>Tiếp theo</Text>
-          )}
-        </TouchableOpacity>
-      </View>
+          <Text style={styles.title}>Thói quen vận động của bạn ở mức độ nào?</Text>
+          
+          <Text style={styles.subtitle}>
+            <Text style={{fontWeight: 'bold', color: '#F9A825'}}>{getCharacterName()}</Text> sẽ đưa ra khuyến nghị chính xác nhất dựa trên mức vận động thực tế
+          </Text>
 
+          <View style={styles.listContainer}>
+            {ACTIVITIES.map((item) => {
+              const isSelected = selectedId === item.id;
+              return (
+                <TouchableOpacity 
+                  key={item.id} 
+                  style={[ styles.card, isSelected && styles.selectedCard ]}
+                  onPress={() => setSelectedId(item.id)}
+                  activeOpacity={0.9}
+                >
+                  <View style={styles.cardContent}>
+                    <View style={[styles.radioCircle, isSelected && styles.selectedRadio]}>
+                      {isSelected && <View style={styles.radioDot} />}
+                    </View>
+                    <View style={styles.textWrapper}>
+                      <Text style={[styles.cardTitle, isSelected && styles.selectedText]}>
+                        {item.label}
+                      </Text>
+                      <Text style={styles.cardDesc}>{item.desc}</Text>
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        </ScrollView>
+
+        <View style={styles.footer}>
+          <TouchableOpacity 
+            style={[styles.nextButton, !selectedId && styles.disabledButton]} 
+            onPress={handleNext}
+            disabled={!selectedId || loading}
+          >
+            {loading ? (
+              <ActivityIndicator color="#333" />
+            ) : (
+              <Text style={[styles.btnText, !selectedId && {color: '#999'}]}>Tiếp theo</Text>
+            )}
+          </TouchableOpacity>
+        </View>
+
+      </View>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff', paddingHorizontal: 20 },
-  
-  // Header
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 10 },
-  progressBar: { flex: 1, height: 6, backgroundColor: '#FFF9C4', borderRadius: 3, marginHorizontal: 15 },
-  progressFill: { height: '100%', backgroundColor: '#FDD835', borderRadius: 3 },
-  stepText: { color: '#999', fontWeight: 'bold' },
-  
-  // Title
-  title: { fontSize: 22, fontWeight: 'bold', marginTop: 20, marginBottom: 10, color: '#333' },
+  safeArea: { flex: 1, backgroundColor: '#fff' },
+  container: { flex: 1, paddingHorizontal: 20 },
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 10, marginBottom: 10 },
+  backBtn: { padding: 5 },
+  scrollContent: { paddingBottom: 20 },
+  title: { fontSize: 22, fontWeight: 'bold', marginTop: 10, marginBottom: 10, color: '#333' },
   subtitle: { fontSize: 15, color: '#666', marginBottom: 20, lineHeight: 22 },
-  
-  // List
-  listContainer: { paddingBottom: 20 },
-  card: { 
-    borderRadius: 12, 
-    borderWidth: 1.5, 
-    borderColor: '#EEE', 
-    marginBottom: 15,
-    backgroundColor: '#fff',
-    padding: 15
-  },
-  selectedCard: { 
-    backgroundColor: '#FFFDE7',
-    borderColor: '#FDD835'      
-  },
-  
+  listContainer: {},
+  card: { borderRadius: 12, borderWidth: 1.5, borderColor: '#EEE', marginBottom: 15, backgroundColor: '#fff', padding: 15 },
+  selectedCard: { backgroundColor: '#FFFDE7', borderColor: '#FDD835' },
   cardContent: { flexDirection: 'row', alignItems: 'flex-start' },
-  
-  // Radio Button Styles
-  radioCircle: { 
-    width: 20, height: 20, borderRadius: 10, borderWidth: 2, 
-    borderColor: '#FDD835', 
-    marginRight: 15, marginTop: 2, 
-    justifyContent: 'center', alignItems: 'center', 
-    backgroundColor: '#fff' 
-  },
-  selectedRadio: { 
-    backgroundColor: '#fff', 
-    borderColor: '#FDD835' 
-  },
-  radioDot: { 
-    width: 10, height: 10, borderRadius: 5, backgroundColor: '#FDD835' 
-  },
-
-  // Text Styles
+  radioCircle: { width: 20, height: 20, borderRadius: 10, borderWidth: 2, borderColor: '#FDD835', marginRight: 15, marginTop: 2, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' },
+  selectedRadio: { backgroundColor: '#fff', borderColor: '#FDD835' },
+  radioDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: '#FDD835' },
   textWrapper: { flex: 1 },
   cardTitle: { fontSize: 16, fontWeight: 'bold', color: '#333', marginBottom: 4 },
   selectedText: { color: '#F9A825' },
   cardDesc: { fontSize: 13, color: '#888', lineHeight: 18 },
-
-  // Footer
-  footer: { paddingBottom: 30, paddingTop: 10 },
+  footer: { paddingVertical: 20, backgroundColor: '#fff', borderTopWidth: 1, borderTopColor: '#f0f0f0' },
   nextButton: { backgroundColor: '#FDD835', padding: 16, borderRadius: 30, alignItems: 'center' },
   disabledButton: { backgroundColor: '#E0E0E0' },
   btnText: { fontWeight: 'bold', fontSize: 18, color: '#333' }

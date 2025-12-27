@@ -13,8 +13,8 @@ interface Props {
     item: any;
     onClose: () => void;
     backendUrl: string;
-    userWeight?: number; // Cân nặng user để tính calo
-    onSaveSuccess?: () => void; // Callback reload list sau khi save
+    userWeight?: number; 
+    onSaveSuccess?: () => void; 
     onFavoriteToggled?: () => void;
     targetDate?: string;
 }
@@ -22,29 +22,21 @@ interface Props {
 export default function ActivityModal({ visible, item, onClose, backendUrl, userWeight = 60, onSaveSuccess, onFavoriteToggled, targetDate }: Props) {
     const [minutes, setMinutes] = useState(''); 
     const [manualCal, setManualCal] = useState('');
-    
-    // State quản lý levels từ API
     const [levels, setLevels] = useState<any[]>([]); 
     const [selectedLevel, setSelectedLevel] = useState<any>(null);
     const [showIntensityDropdown, setShowIntensityDropdown] = useState(false);
-    
-    // Tim yêu thích
     const [isFavorite, setIsFavorite] = useState(false);
     const [saving, setSaving] = useState(false);
-
-    // Reset dữ liệu khi mở modal
     useEffect(() => {
         if (visible && item) {
             setMinutes('');
             setManualCal('');
             setShowIntensityDropdown(false);
-            setIsFavorite(item.is_favorite || false); // Set tim từ dữ liệu API
-
-            // Lấy danh sách levels từ item API trả về
+            setIsFavorite(item.is_favorite || false); 
             const dbLevels = item.levels || [];
             if (dbLevels.length > 0) {
                 setLevels(dbLevels);
-                setSelectedLevel(dbLevels[0]); // Mặc định chọn cái đầu
+                setSelectedLevel(dbLevels[0]);
             } else {
                 setLevels([]);
                 setSelectedLevel(null);
@@ -53,29 +45,24 @@ export default function ActivityModal({ visible, item, onClose, backendUrl, user
     }, [visible, item]);
 
     if (!item) return null;
-
-    // --- LOGIC TÍNH CALO ---
     const calculateCalories = () => {
         if (manualCal !== '') return parseFloat(manualCal) || 0;
         
         const duration = parseInt(minutes) || 0;
         const met = selectedLevel ? selectedLevel.met_value : 0;
-        
-        // Công thức: (MET * 3.5 * weight) / 200 * minutes
         const caloriesBurned = (met * 3.5 * userWeight) / 200 * duration;
         return Math.round(caloriesBurned);
     };
 
     const totalCal = calculateCalories();
 
-    // --- XỬ LÝ LƯU (SAVE) ---
     const handleSave = async () => {
         if (!auth.currentUser || !selectedLevel) return;
         setSaving(true);
         try {
             const payload = {
                 firebase_id: auth.currentUser.uid,
-                level_id: selectedLevel.level_id, // Lấy ID từ level đã chọn
+                level_id: selectedLevel.level_id, 
                 duration_minutes: parseInt(minutes) || 0,
                 calories_burned: totalCal,
                 log_date: targetDate || new Date().toISOString().split('T')[0]
@@ -85,7 +72,7 @@ export default function ActivityModal({ visible, item, onClose, backendUrl, user
             
             if (res.data.success) {
                 Alert.alert("Thành công", `Đã lưu hoạt động: ${item.name}`);
-                if (onSaveSuccess) onSaveSuccess(); // Reload list bên ngoài nếu cần
+                if (onSaveSuccess) onSaveSuccess(); 
                 onClose();
             } else {
                 Alert.alert("Lỗi", "Không thể lưu hoạt động");
@@ -97,11 +84,8 @@ export default function ActivityModal({ visible, item, onClose, backendUrl, user
             setSaving(false);
         }
     };
-
-    // --- XỬ LÝ TIM (FAVORITE) ---
     const toggleFavorite = async () => {
         if (!auth.currentUser) return;
-        // UI Optimistic Update: Đổi màu ngay lập tức cho mượt
         const newState = !isFavorite;
         setIsFavorite(newState); 
 
@@ -110,28 +94,24 @@ export default function ActivityModal({ visible, item, onClose, backendUrl, user
                 firebase_id: auth.currentUser.uid,
                 activity_id: item.id
             });
-            // Nếu cần thiết thì gọi lại API list ở màn cha để cập nhật
         } catch (error) {
             console.log("Fav Error:", error);
-            setIsFavorite(!newState); // Revert nếu lỗi
+            setIsFavorite(!newState); 
         }
     };
 
-    // Xử lý ảnh
     let imageSource = require('@/assets/images/react-logo.png');
     const imgPath = item.image_url || item.IMAGE_PATH;
     if (imgPath) {
         imageSource = imgPath.startsWith('http') ? { uri: imgPath } : { uri: `${backendUrl}/${imgPath}` };
     }
 
-    // Điều kiện enable nút Save: Phải chọn Level VÀ (Có nhập phút HOẶC Nhập calo tay)
     const canSave = selectedLevel && (minutes.length > 0 || manualCal.length > 0);
 
     return (
         <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                 <View style={styles.container}>
-                    {/* Header */}
                     <View style={styles.header}>
                         <TouchableOpacity onPress={onClose} style={styles.backBtn}>
                             <Ionicons name="close" size={24} color="#333" />
@@ -141,7 +121,6 @@ export default function ActivityModal({ visible, item, onClose, backendUrl, user
                     </View>
 
                     <ScrollView contentContainerStyle={styles.scrollContent}>
-                        {/* Info Card */}
                         <View style={styles.infoCard}>
                             <Image source={imageSource} style={styles.infoImage} resizeMode="cover" />
                             <View style={styles.infoTextContainer}>
@@ -150,8 +129,6 @@ export default function ActivityModal({ visible, item, onClose, backendUrl, user
                                     Đã đốt <Text style={{fontWeight: 'bold', color: '#4CAF50'}}>{totalCal}</Text> Calo
                                 </Text>
                             </View>
-                            
-                            {/* Nút Tim */}
                             <TouchableOpacity onPress={toggleFavorite}>
                                 <Ionicons 
                                     name={isFavorite ? "heart" : "heart-outline"} 
@@ -160,8 +137,6 @@ export default function ActivityModal({ visible, item, onClose, backendUrl, user
                                 />
                             </TouchableOpacity>
                         </View>
-
-                        {/* Chọn mức độ (Lấy từ DB) */}
                         <Text style={styles.sectionLabel}>Chọn mức độ vận động</Text>
                         <TouchableOpacity 
                             style={styles.dropdown} 
@@ -189,8 +164,6 @@ export default function ActivityModal({ visible, item, onClose, backendUrl, user
                                 ))}
                             </View>
                         )}
-
-                        {/* Nhập thời gian */}
                         <View style={styles.inputRow}>
                             <Text style={styles.inputLabel}>Thời gian, phút</Text>
                             <TextInput 
@@ -203,8 +176,6 @@ export default function ActivityModal({ visible, item, onClose, backendUrl, user
                         </View>
 
                         <View style={styles.divider} />
-
-                        {/* Nhập trực tiếp */}
                         <View style={styles.inputRow}>
                             <Text style={[styles.inputLabel, {color: '#999'}]}>*Hoặc ghi trực tiếp</Text>
                             <View style={{flexDirection: 'row', alignItems: 'center'}}>
@@ -219,8 +190,6 @@ export default function ActivityModal({ visible, item, onClose, backendUrl, user
                             </View>
                         </View>
                     </ScrollView>
-
-                    {/* Footer Button */}
                     <View style={styles.footer}>
                         <TouchableOpacity 
                             style={[styles.saveBtn, !canSave && styles.disabledBtn]} 
@@ -240,7 +209,6 @@ export default function ActivityModal({ visible, item, onClose, backendUrl, user
     );
 }
 
-// Giữ nguyên phần styles như cũ, chỉ thay đổi logic bên trong
 const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: '#FAFAFA' },
     header: { flexDirection: 'row', alignItems: 'center', padding: 20, backgroundColor: '#FFF', justifyContent: 'space-between', marginTop: 10 },

@@ -9,6 +9,7 @@ import { useVideoPlayer, VideoView } from 'expo-video';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, Tabs } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
+import { BACKEND_URL } from '@/src/config/apiConfig';
 
 export default function NanaIntroScreen() {
   const router = useRouter();
@@ -89,7 +90,6 @@ export default function NanaIntroScreen() {
       } as any);
 
       // --- KHAI BÁO IP 
-      const BACKEND_URL = 'http://192.168.1.3:8000'; 
       const API_URL = `${BACKEND_URL}/api/detect`; 
 
       console.log("Đang gửi ảnh tới:", API_URL);

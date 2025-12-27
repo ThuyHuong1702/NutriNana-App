@@ -19,35 +19,23 @@ const IMAGE_SIZE = SCREEN_HEIGHT < 700 ? 60 : 80;
 
 export default function FoodModal({ visible, item, onClose, onAddToCart, backendUrl }: any) {
     const [amountStr, setAmountStr] = useState('1');
-
-    // 👇 LOGIC QUAN TRỌNG: Lấy dữ liệu từ CSDL (thông qua prop item) khi mở Modal
     useEffect(() => {
         if (visible && item) {
             if (item.quantity && item.quantity > 0) {
-                // Nếu món này đã có trong Cart/CSDL -> Lấy số lượng cũ
                 setAmountStr(String(item.quantity));
             } else {
-                // Nếu là món mới -> Mặc định là 1
                 setAmountStr('1');
             }
         }
     }, [visible, item]);
 
     if (!item) return null;
-
-    // --- TÍNH TOÁN DINH DƯỠNG ---
     const quantity = parseFloat(amountStr) || 0;
-    
-    // 1. Chuẩn hóa dữ liệu đầu vào (Ưu tiên chữ hoa, nếu không có thì lấy chữ thường)
     const rawProtein = item.PROTEIN || item.protein || 0;
     const rawCarb = item.CARB || item.carb || 0;
     const rawFat = item.FAT || item.fat || 0;
-    
-    // 2. Tính Calo
     const baseCal = item.CALORIES || item.calories || (item.displayCal / (item.quantity || 1)) || 0;
     const totalCal = Math.round(baseCal * quantity);
-    
-    // Xử lý ảnh
     let imageSource = require('@/assets/images/react-logo.png');
     const dbPath = item.IMAGE_PATH || item.image_url;
     if (dbPath) {
@@ -64,15 +52,12 @@ export default function FoodModal({ visible, item, onClose, onAddToCart, backend
             quantity: quantity,
             displayImage: imageSource,
             unit: item.UNIT || item.unit || 'phần',
-            // Lưu lại giá trị đã chuẩn hóa
             PROTEIN: rawProtein,
             CARB: rawCarb,
             FAT: rawFat
         });
         onClose();
     };
-
-    // Kiểm tra xem đây có phải là món đang sửa (đã có trong DB) hay không
     const isEditing = item.quantity && item.quantity > 0;
 
     return (
@@ -85,7 +70,6 @@ export default function FoodModal({ visible, item, onClose, onAddToCart, backend
         >
             <View style={styles.modalOverlay}>
                 <View style={styles.modalContainer}>
-                    {/* --- HEADER --- */}
                     <View style={styles.header}>
                         <Text style={styles.title} numberOfLines={1}>
                             {isEditing ? 'Cập nhật món ăn' : 'Thêm món mới'}
@@ -100,32 +84,23 @@ export default function FoodModal({ visible, item, onClose, onAddToCart, backend
                         showsVerticalScrollIndicator={false}
                         bounces={false}
                     >
-                        {/* Ảnh món ăn */}
                         <Image 
                             source={imageSource} 
                             style={[styles.image, { width: IMAGE_SIZE, height: IMAGE_SIZE, borderRadius: IMAGE_SIZE/2 }]} 
                             resizeMode="cover"
                         />
-                        
-                        {/* Tên món */}
                         <Text style={styles.foodName} numberOfLines={2} adjustsFontSizeToFit>
                             {item.DISH_NAME || item.displayName || item.name}
                         </Text>
-                        
-                        {/* Nếu đang sửa từ CSDL thì hiện thông báo nhỏ */}
                         {isEditing && (
                             <View style={styles.dbInfoTag}>
                                 <Ionicons name="cloud-done-outline" size={12} color="#F57F17" />
                                 <Text style={styles.dbInfoText}>Đã lưu: {item.quantity} của {item.UNIT || 'phần'}</Text>
                             </View>
                         )}
-                        
-                        {/* Calo Badge */}
                         <View style={styles.calBadge}>
                             <Text style={styles.calText}>{totalCal} Kcal</Text>
                         </View>
-                        
-                        {/* Macro Info */}
                         <View style={styles.macroRow}>
                             <MacroItem 
                                 label="Protein" 
@@ -143,8 +118,6 @@ export default function FoodModal({ visible, item, onClose, onAddToCart, backend
                                 color="#FF9800"
                             />
                         </View>
-
-                        {/* Hiển thị số lượng to */}
                         <View style={styles.amountContainer}>
                             <Text style={styles.amountDisplay} maxFontSizeMultiplier={1.5} numberOfLines={1}>
                                 {amountStr}
@@ -154,8 +127,6 @@ export default function FoodModal({ visible, item, onClose, onAddToCart, backend
                             </Text>
                         </View>
                     </ScrollView>
-
-                    {/* --- BÀN PHÍM SỐ --- */}
                     <NumberKeypad 
                         onPress={(k:string) => (amountStr === '0' && k !== '.') ? setAmountStr(k) : (amountStr.length < 6 && setAmountStr(prev => prev + k))}
                         onDelete={() => setAmountStr(prev => prev.length > 1 ? prev.slice(0,-1) : '0')}
@@ -227,7 +198,6 @@ const styles = StyleSheet.create({
         color: '#333',
         maxWidth: '90%'
     },
-    // Style cho tag thông báo dữ liệu từ DB
     dbInfoTag: {
         flexDirection: 'row',
         alignItems: 'center',

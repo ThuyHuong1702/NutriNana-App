@@ -21,19 +21,16 @@ export const CategorySidebar = ({ categories, selectedCategory, onSelect }: Prop
             <TouchableOpacity
               style={[styles.itemBtn, isSelected && styles.itemSelected]}
               onPress={() => onSelect(item)}
-              activeOpacity={0.7}
-              // Hỗ trợ trình đọc màn hình
               accessibilityRole="button"
               accessibilityState={{ selected: isSelected }}
             >
-              {/* Thanh vàng chỉ thị */}
               {isSelected && <View style={styles.activeBar} />}
               
               <Text 
                 style={[styles.itemText, isSelected && styles.itemTextSelected]}
-                numberOfLines={2} // Cho phép xuống dòng tối đa 2 dòng
-                ellipsizeMode="tail" // Nếu dài quá 2 dòng thì ...
-                adjustsFontSizeToFit // Tự thu nhỏ chữ nhẹ nếu quá chật (chỉ trên iOS)
+                numberOfLines={2} 
+                ellipsizeMode="tail"
+                adjustsFontSizeToFit
                 minimumFontScale={0.8}
               >
                 {item}
@@ -48,7 +45,7 @@ export const CategorySidebar = ({ categories, selectedCategory, onSelect }: Prop
 
 const styles = StyleSheet.create({
   container: { 
-    flex: 1, // Chiếm hết chiều rộng/cao mà cha cho phép
+    flex: 1, 
     backgroundColor: '#F9F9F9', 
     borderRightWidth: 1, 
     borderRightColor: '#EFEFEF' 
@@ -57,26 +54,25 @@ const styles = StyleSheet.create({
     paddingBottom: 20 
   },
   itemBtn: { 
-    // Không dùng height cố định, dùng minHeight để đảm bảo vùng chạm
     minHeight: 60, 
     width: '100%',
     paddingVertical: 12, 
-    paddingHorizontal: 4, // Padding ngang nhỏ để dành chỗ cho text
-    justifyContent: 'center', // Căn giữa nội dung theo chiều dọc
+    paddingHorizontal: 4, 
+    justifyContent: 'center', 
     alignItems: 'center',
     borderBottomWidth: 1, 
     borderBottomColor: '#F0F0F0',
-    position: 'relative', // Để activeBar absolute theo thằng này
+    position: 'relative', 
   },
   itemSelected: { 
     backgroundColor: '#FFF' 
   },
   itemText: { 
-    fontSize: 13, // Kích thước cơ bản
+    fontSize: 13,
     color: '#666', 
     textAlign: 'center', 
     fontWeight: '500',
-    width: '100%', // Text chiếm hết chiều ngang nút
+    width: '100%',
   },
   itemTextSelected: { 
     color: '#D4A017', 
@@ -85,9 +81,8 @@ const styles = StyleSheet.create({
   activeBar: { 
     position: 'absolute', 
     left: 0, 
-    // Thay vì top/bottom cố định, dùng height % và căn giữa
     height: '60%', 
-    top: '20%', // (100% - 60%) / 2 = 20% -> Luôn nằm giữa bất kể chiều cao item
+    top: '20%', 
     width: 4, 
     backgroundColor: '#FDD835', 
     borderTopRightRadius: 2, 

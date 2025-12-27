@@ -7,27 +7,22 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
-// 👇 Thay bằng IP máy của bạn
-const BACKEND_URL = 'http://192.168.1.3:8000'; 
+import { BACKEND_URL } from '@/src/config/apiConfig';
+ 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
-// Hàm xử lý ảnh
 const getImageSource = (path: string) => {
     if (!path) return require('@/assets/images/react-logo.png');
     return path.startsWith('http') ? { uri: path } : { uri: `${BACKEND_URL}/${path}` };
 };
 
-// 👇 1. ĐỊNH NGHĨA KIỂU DỮ LIỆU (INTERFACE)
 interface WaterSelectionModalProps {
     visible: boolean;
     onClose: () => void;
-    // Chấp nhận hàm trả về void hoặc Promise<void> để tương thích với async function
     onSubmit: (selectedDrink: any, volume: number) => void | Promise<void>; 
     defaultVolume?: number; 
 }
 
-// 👇 2. GÁN KIỂU DỮ LIỆU VÀO ĐÂY (: WaterSelectionModalProps)
 export default function WaterSelectionModal({ 
     visible, 
     onClose, 
@@ -42,8 +37,6 @@ export default function WaterSelectionModal({
     
     const [selectedDrink, setSelectedDrink] = useState<any>(null);
     const [volumeStr, setVolumeStr] = useState(defaultVolume.toString());
-
-    // Cập nhật volumeStr khi defaultVolume thay đổi hoặc modal mở lại
     useEffect(() => {
         if (visible) {
             fetchDrinks();
@@ -110,8 +103,6 @@ export default function WaterSelectionModal({
         <Modal visible={visible} animationType="slide" transparent={true} onRequestClose={onClose}>
             <View style={styles.overlay}>
                 <View style={[styles.modalContainer, { paddingBottom: Math.max(insets.bottom, 20) }]}>
-                    
-                    {/* Header */}
                     <View style={styles.header}>
                         <TouchableOpacity onPress={onClose} hitSlop={{top:10, bottom:10, left:10, right:10}}>
                             <Ionicons name="close" size={24} color="#333" />
@@ -119,8 +110,6 @@ export default function WaterSelectionModal({
                         <Text style={styles.headerTitle} maxFontSizeMultiplier={1.3}>Ghi đồ uống</Text>
                         <View style={{width: 24}} />
                     </View>
-
-                    {/* Danh sách loại nước */}
                     <View style={styles.listWrapper}>
                         <Text style={styles.subTitle} maxFontSizeMultiplier={1.2}>Danh sách đồ uống</Text>
                         {loading ? <ActivityIndicator size="large" color="#007AFF" /> : (
@@ -135,21 +124,16 @@ export default function WaterSelectionModal({
                             />
                         )}
                     </View>
-
-                    {/* Divider */}
                     <View style={styles.divider} />
 
-                    {/* Phần nhập liệu */}
                     <View style={styles.inputSection}>
-                        
-                        {/* Hiển thị số ml */}
+
                         <View style={styles.inputDisplay}>
                             <Text style={styles.volumeText} maxFontSizeMultiplier={1.2}>{volumeStr}</Text>
                             <Text style={styles.unitText} maxFontSizeMultiplier={1.2}>ml</Text>
                             <View style={styles.underline} />
                         </View>
 
-                        {/* Chọn nhanh (Scroll ngang) */}
                         <View style={styles.chipSection}>
                             <Text style={styles.chipLabel} maxFontSizeMultiplier={1.2}>Chọn nhanh (ml)</Text>
                             <ScrollView 
@@ -169,9 +153,7 @@ export default function WaterSelectionModal({
                             </ScrollView>
                         </View>
 
-                        {/* Bàn phím số */}
                         <View style={styles.numpadContainer}>
-                            {/* Cột trái: Số */}
                             <View style={styles.numpadGrid}>
                                 {['1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '0'].map((num) => (
                                     <TouchableOpacity 
@@ -192,7 +174,6 @@ export default function WaterSelectionModal({
                                 </TouchableOpacity>
                             </View>
                             
-                            {/* Cột phải: Xóa & Lưu */}
                             <View style={styles.submitContainer}>
                                 <TouchableOpacity 
                                     style={[styles.backspaceBtn, { height: NUMPAD_HEIGHT }]} 

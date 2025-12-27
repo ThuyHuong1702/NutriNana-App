@@ -3,7 +3,7 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useState, useEffect } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, updateDoc } from 'firebase/firestore';
 import { auth, db } from '@/src/config/firebase';
 import NumberPicker from '@/src/components/NumberPicker';
 
@@ -11,27 +11,28 @@ export default function TargetWeightScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
   
-  // State
-  const [currentWeight, setCurrentWeight] = useState(60);
-  const [targetWeight, setTargetWeight] = useState(60);
+  const currentWeight = parseFloat(params.weight as string) || 60;
+  const goal = params.goal as string; // 'gain' | 'lose'
+
+  const [targetWeight, setTargetWeight] = useState(currentWeight);
   const [loading, setLoading] = useState(false);
-  const [dataLoaded, setDataLoaded] = useState(false);
+
+  let minVal = 30;
+  let maxVal = 200;
+  let initVal = currentWeight;
+
+  if (goal === 'gain') {
+    minVal = currentWeight + 1;
+    maxVal = 200;
+    initVal = currentWeight + 2; 
+  } else if (goal === 'lose') {
+    minVal = 30;
+    maxVal = currentWeight - 1;
+    initVal = currentWeight - 2; 
+  }
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      if (auth.currentUser) {
-        const userDoc = await getDoc(doc(db, 'users', auth.currentUser.uid));
-        if (userDoc.exists()) {
-          const data = userDoc.data();
-          if (data.weight) {
-            setCurrentWeight(data.weight);
-            setTargetWeight(data.weight); 
-          }
-        }
-      }
-      setDataLoaded(true);
-    };
-    fetchUserData();
+    setTargetWeight(initVal);
   }, []);
 
   const handleNext = async () => {
@@ -42,18 +43,10 @@ export default function TargetWeightScreen() {
           targetWeight: targetWeight
         });
       }
-      const goalType = params.goal;
-      if (goalType === 'maintain') {
-      router.push({ 
-        pathname: '/(onboarding)/plan', 
-        params: { ...params, targetWeight: targetWeight, weightSpeed: 0 } 
-      } as any);
-    } else {
       router.push({ 
         pathname: '/(onboarding)/speed', 
         params: { ...params, targetWeight: targetWeight } 
       } as any);
-    }
 
     } catch (error) {
       console.log(error);
@@ -65,7 +58,7 @@ export default function TargetWeightScreen() {
   return (
     <SafeAreaView style={styles.container}>
       
-      {/* 1. Header */}
+      {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()}>
           <Ionicons name="arrow-back" size={24} color="#333" />
@@ -77,52 +70,59 @@ export default function TargetWeightScreen() {
         <Text style={styles.stepText}>6/7</Text>
       </View>
 
-      {/* 2. Tiêu đề */}
-      <Text style={styles.title}>Bạn mong muốn có mức cân bao nhiêu kg?</Text>
+      {/* Content */}
+      <View style={styles.contentContainer}>
+        <Text style={styles.title}>
+          {goal === 'gain' ? "Bạn muốn tăng lên bao nhiêu kg?" : "Bạn muốn giảm xuống bao nhiêu kg?"}
+        </Text>
 
-      {/* 3. Bộ chọn Cân nặng */}
-      {dataLoaded ? (
         <View style={styles.pickerContainer}>
           <NumberPicker 
-            min={30} max={150} 
-            initialValue={Math.round(currentWeight)} 
+            key={goal}
+            min={minVal} 
+            max={maxVal} 
+            initialValue={initVal} 
             unit="Kg" 
             onValueChange={setTargetWeight} 
           />
         </View>
-      ) : (
-        <View style={styles.pickerContainer}>
-          <ActivityIndicator size="large" color="#FDD835" />
-        </View>
-      )}
+      </View>
 
-      <TouchableOpacity 
-        style={styles.nextButton} 
-        onPress={handleNext} 
-        disabled={loading || !dataLoaded}
-      >
-        {loading ? (
-          <ActivityIndicator color="#333" />
-        ) : (
-          <Text style={styles.btnText}>Tiếp theo</Text>
-        )}
-      </TouchableOpacity>
+      {/* Footer */}
+      <View style={styles.footer}>
+        <TouchableOpacity 
+          style={styles.nextButton} 
+          onPress={handleNext} 
+          disabled={loading}
+        >
+          {loading ? (
+            <ActivityIndicator color="#333" />
+          ) : (
+            <Text style={styles.btnText}>Tiếp theo</Text>
+          )}
+        </TouchableOpacity>
+      </View>
 
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff', paddingHorizontal: 20 },
+  safeArea: { flex: 1, backgroundColor: '#fff' },
+  container: { flex: 1, paddingHorizontal: 20 },
+  
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 10 },
   progressBar: { flex: 1, height: 6, backgroundColor: '#FFF9C4', borderRadius: 3, marginHorizontal: 15 },
   progressFill: { height: '100%', backgroundColor: '#FDD835', borderRadius: 3 },
   stepText: { color: '#999', fontWeight: 'bold' },
   
-  title: { fontSize: 24, fontWeight: 'bold', textAlign: 'center', marginTop: 40, marginBottom: 50, color: '#333' },
+  contentContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   
-  pickerContainer: { flex: 1, justifyContent: 'center' },
+  title: { fontSize: 24, fontWeight: 'bold', textAlign: 'center', marginBottom: 40, color: '#333' },
   
-  nextButton: { backgroundColor: '#FDD835', padding: 16, borderRadius: 30, alignItems: 'center', marginBottom: 30 },
+  pickerContainer: { height: 250, width: '100%', justifyContent: 'center', alignItems: 'center' },
+  
+  footer: { paddingVertical: 20 },
+  nextButton: { backgroundColor: '#FDD835', padding: 16, borderRadius: 30, alignItems: 'center' },
   btnText: { fontWeight: 'bold', fontSize: 18, color: '#333' }
 });

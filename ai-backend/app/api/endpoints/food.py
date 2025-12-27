@@ -4,12 +4,41 @@ from app.services.ai_service import detect_food
 from app.db.mysql import get_db_connection
 from pydantic import BaseModel
 from typing import List
-from app.services.ai_service import get_gemini_suggestion
 from app.db.mysql import get_db_connection
-from app.services.ai_service import detect_food, get_gemini_suggestion, chat_with_gemini
-
+from app.services.ai_service import detect_food, interact_with_gemini
+import json
 
 router = APIRouter()
+# Hàm này dùng chung cho cả Chat và Suggest
+def get_user_profile_helper(firebase_id: str):
+    """Hàm phụ trợ để lấy thông tin BMI, TDEE, GOAL từ DB"""
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        sql = "SELECT BMI, TDEE, GOAL_TYPE FROM USER_PROFILE WHERE FIREBASE_ID = %s"
+        cursor.execute(sql, (firebase_id,))
+        result = cursor.fetchone()
+        
+        if result:
+            goal_mapping = {
+                "lose": "giảm cân",
+                "gain": "tăng cân",
+                "maintain": "duy trì cân nặng"
+            }
+            return {
+                "bmi": result.get('BMI', 'N/A'),
+                "tdee": result.get('TDEE', 2000),
+                "goal": goal_mapping.get(result.get('GOAL_TYPE'), "ăn uống lành mạnh")
+            }
+        # Fallback nếu chưa có profile
+        return {"bmi": "N/A", "tdee": 2000, "goal": "ăn uống lành mạnh"}
+    except Exception as e:
+        print(f"Error getting profile: {e}")
+        return {"bmi": "N/A", "tdee": 2000, "goal": "lỗi dữ liệu"}
+    finally:
+        if conn.is_connected():
+            cursor.close()
+            conn.close()
 
 @router.get("/foods")
 async def get_all_foods():
@@ -31,31 +60,29 @@ async def get_all_foods():
         print(f"❌ Lỗi lấy món ăn: {e}")
         return {"success": False, "data": [], "error": str(e)}
     
+# ---------------------------------------------------------
+# 2. API NHẬN DIỆN ẢNH (YOLO)
+# ---------------------------------------------------------
 @router.post("/detect")
 async def detect_ingredients(file: UploadFile = File(...)):
-    # 1. Kiểm tra định dạng file
     if not file.content_type.startswith("image/"):
         raise HTTPException(status_code=400, detail="File tải lên không phải là hình ảnh")
     
     try:
-        # 2. Đọc dữ liệu ảnh
         contents = await file.read()
-        
-        # 3. Gọi Service AI
         ingredients = detect_food(contents)
         
-        # 4. Trả về kết quả
         return {
-            "message": "Thành công",
-            "ingredients": ingredients
+            "success": True,
+            "ingredients": ingredients # Hoặc "foods": ingredients tùy frontend bạn gọi
         }
-
     except Exception as e:
-        # 5. Bắt lỗi
         print(f"❌ Lỗi nhận diện AI: {e}")
-        # Trả về lỗi 500
         raise HTTPException(status_code=500, detail=f"Lỗi xử lý hình ảnh: {str(e)}")
-# 1. CẬP NHẬT MODEL ĐỂ NHẬN STRING
+
+# ---------------------------------------------------------
+# 3. API GỢI Ý MÓN ĂN TỪ NGUYÊN LIỆU (GEMINI JSON)
+# ---------------------------------------------------------
 class SuggestionRequest(BaseModel):
     firebase_id: str  
     ingredients: List[str]
@@ -63,59 +90,45 @@ class SuggestionRequest(BaseModel):
 @router.post("/suggest")
 async def suggest_food(request: SuggestionRequest):
     try:
-        # 2. KẾT NỐI DB
-        conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
-        
-        # 3.SQL
-        # - Lấy cột GOAL_TYPE 
-        # - Tìm theo FIREBASE_ID
-        sql = "SELECT GOAL_TYPE FROM USER_PROFILE WHERE FIREBASE_ID = %s" 
-        
-        cursor.execute(sql, (request.firebase_id,))
-        result = cursor.fetchone()
-        
-        cursor.close()
-        conn.close()
+        # 1. Lấy profile (Dùng hàm helper)
+        user_profile = get_user_profile_helper(request.firebase_id)
 
-        # 4. XỬ LÝ MỤC TIÊU ĐỂ GỬI CHO AI
-        # Dữ liệu trong DB là: 'lose', 'gain', 'maintain' 
-        goal_mapping = {
-            "lose": "giảm cân",
-            "gain": "tăng cân",
-            "maintain": "duy trì cân nặng"
-        }
-
-        if result:
-            db_goal = result['GOAL_TYPE'] # Lấy giá trị từ cột GOAL_TYPE
-            user_goal = goal_mapping.get(db_goal, "ăn uống lành mạnh")
-        else:
-            # Trường hợp user chưa cập nhật profile
-            user_goal = "ăn uống lành mạnh"
-
-        # 5. GỌI GEMINI
-        # Prompt sẽ thành: "...cho người có mục tiêu 'giảm cân'..."
-        ai_response = get_gemini_suggestion(request.ingredients, user_goal)
+        # 2. Gọi hàm chung với tham số ingredients_list -> Trả về JSON
+        ai_response = interact_with_gemini(
+            user_profile=user_profile, 
+            ingredients_list=request.ingredients
+        )
 
         return {
             "success": True,
-            "reply": ai_response
+            # Frontend cần chuỗi JSON để parse
+            "reply": json.dumps(ai_response) 
         }
 
     except Exception as e:
         print(f"❌ Lỗi API suggest: {e}")
         raise HTTPException(status_code=500, detail=str(e))
-    
-    
-# 2. Định nghĩa Model dữ liệu gửi lên
+
+# ---------------------------------------------------------
+# 4. API CHAT BOT (GEMINI TEXT) - ĐÃ CẬP NHẬT
+# ---------------------------------------------------------
 class ChatRequest(BaseModel):
+    firebase_id: str # <--- QUAN TRỌNG: Thêm trường này để Bot biết ai đang chat
     message: str
 
-# 3. Tạo API endpoint mới
 @router.post("/chat")
 async def chat_bot(request: ChatRequest):
     try:
-        reply = chat_with_gemini(request.message)
-        return {"success": True, "reply": reply}
+        # 1. Lấy profile để bot "khôn" hơn khi chat
+        user_profile = get_user_profile_helper(request.firebase_id)
+
+        # 2. Gọi hàm chung với tham số user_message -> Trả về Text
+        reply_text = interact_with_gemini(
+            user_profile=user_profile, 
+            user_message=request.message
+        )
+        
+        return {"success": True, "reply": reply_text}
     except Exception as e:
+        print(f"❌ Lỗi API Chat: {e}")
         raise HTTPException(status_code=500, detail=str(e))

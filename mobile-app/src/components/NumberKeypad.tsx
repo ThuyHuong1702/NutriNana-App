@@ -38,7 +38,6 @@ export default function NumberKeypad({ onPress, onDelete, onSave }: NumberKeypad
         <TouchableOpacity style={styles.backspaceBtn} onPress={onDelete} activeOpacity={0.7}>
           <Ionicons name="backspace-outline" size={28} color="#333" />
         </TouchableOpacity>
-        {/* NÚT LƯU ĐÃ ĐỔI MÀU */}
         <TouchableOpacity style={styles.saveBtnKeypad} onPress={onSave} activeOpacity={0.7}>
           <Text style={styles.saveTextKeypad} maxFontSizeMultiplier={1.2}>Lưu</Text>
         </TouchableOpacity>
@@ -89,15 +88,14 @@ const styles = StyleSheet.create({
     borderColor: '#EEE', 
     backgroundColor: '#FFF' 
   },
-  // --- THAY ĐỔI STYLE Ở ĐÂY ---
   saveBtnKeypad: { 
     flex: 1, 
     justifyContent: 'center', 
     alignItems: 'center', 
-    backgroundColor: '#FDD835' // Đổi từ xanh (#2E7D32) sang Vàng thương hiệu
+    backgroundColor: '#FDD835' 
   },
   saveTextKeypad: { 
-    color: '#333', // Đổi từ trắng (#FFF) sang đen mờ để dễ đọc trên nền vàng
+    color: '#333',
     fontSize: 18, 
     fontWeight: 'bold' 
   },

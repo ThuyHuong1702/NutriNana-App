@@ -10,9 +10,9 @@ import axios from 'axios';
 import { auth } from '@/src/config/firebase'; 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import WaterSelectionModal from '@/src/components/WaterSelectionModal';
-
+import { BACKEND_URL } from '@/src/config/apiConfig';
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const BACKEND_URL = 'http://192.168.1.3:8000'; 
+
 
 //HÀM CHUẨN HÓA KÍCH THƯỚC
 const scale = SCREEN_WIDTH / 375; 

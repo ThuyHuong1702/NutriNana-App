@@ -6,10 +6,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import axios from 'axios';
 import { auth, db } from '@/src/config/firebase';
 import { doc, updateDoc } from 'firebase/firestore'; 
+import { BACKEND_URL } from '@/src/config/apiConfig';
 
 const { width } = Dimensions.get('window');
 
-const BACKEND_URL = 'http://192.168.1.3:8000';
 
 export default function ResultScreen() {
   const router = useRouter();

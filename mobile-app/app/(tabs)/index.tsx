@@ -9,6 +9,7 @@ import Svg, { Circle, G } from 'react-native-svg';
 import DateTimePicker from '@react-native-community/datetimepicker';//
 import { useAudioPlayer } from 'expo-audio';//
 import { useLocalSearchParams } from 'expo-router';
+import { BACKEND_URL } from '@/src/config/apiConfig';
 
 const { width } = Dimensions.get('window');
 // 2. Cấu hình khoảng cách
@@ -29,7 +30,6 @@ const scaleFont = (size: number) => {
   }
 }
 
-const BACKEND_URL = 'http://192.168.1.3:8000'; 
 
 // Danh sách các loại bữa ăn
 const MEAL_TYPES = [
@@ -152,7 +152,7 @@ export default function HomeScreen() {
       if (!auth.currentUser) return;
       const uid = auth.currentUser.uid;
       const targetDate = dateInput || selectedDate; 
-      const dateStr = targetDate.toISOString().split('T')[0];
+      const dateStr = formatDateForAPI(selectedDate);
       
       const [summaryRes, logRes, waterRes] = await Promise.all([
         axios.get(`${BACKEND_URL}/api/get-daily-summary/${uid}?date_str=${dateStr}`),

@@ -7,9 +7,9 @@ import { auth } from '@/src/config/firebase';
 import FoodModal from '@/src/components/FoodModal';
 import Svg, { Circle, G } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { BACKEND_URL } from '@/src/config/apiConfig';
 
-const { width } = Dimensions.get('window');
-const BACKEND_URL = 'http://192.168.1.3:8000'; 
+const { width } = Dimensions.get('window'); 
 
 const MEAL_RATIOS: {[key: string]: number} = {
   'Sáng': 0.25, 'Trưa': 0.35, 'Tối': 0.30, 'Phụ': 0.10

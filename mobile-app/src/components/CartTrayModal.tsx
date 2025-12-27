@@ -13,8 +13,6 @@ import {
     Dimensions
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-
-// Lấy chiều cao màn hình để tính toán chiều cao Modal hợp lý
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 const IS_IOS = Platform.OS === 'ios';
 
@@ -57,7 +55,7 @@ export default function CartTrayModal({
             animationType="slide" 
             transparent={true} 
             onRequestClose={onClose}
-            statusBarTranslucent // Cho phép modal đè lên status bar trên Android
+            statusBarTranslucent 
         >
             <TouchableWithoutFeedback onPress={onClose}>
                 <View style={styles.trayOverlay} />
@@ -82,7 +80,6 @@ export default function CartTrayModal({
                 </View>
 
                 <View style={styles.trayBody}>
-                    {/* --- Sidebar (Các Tab) --- */}
                     <View style={styles.traySidebar}>
                         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{paddingBottom: 20}}>
                             {tabs.map((tab) => {
@@ -108,8 +105,6 @@ export default function CartTrayModal({
                             })}
                         </ScrollView>
                     </View>
-
-                    {/* --- Content (Danh sách món) --- */}
                     <View style={styles.trayContent}>
                         <View style={styles.sectionHeader}>
                              <Text style={styles.traySectionTitle}>{activeTab} ({currentList.length})</Text>
@@ -162,8 +157,6 @@ export default function CartTrayModal({
                         />
                     </View>
                 </View>
-
-                {/* --- Footer --- */}
                 <View style={styles.trayFooter}>
                     <TouchableOpacity style={styles.trayCompleteBtn} onPress={onClose}>
                         <Text style={styles.trayCompleteText}>Xong</Text>
@@ -183,12 +176,11 @@ const styles = StyleSheet.create({
         position: 'absolute', 
         bottom: 0, 
         width: '100%', 
-        height: SCREEN_HEIGHT * 0.7, // Chiếm 70% màn hình thay vì fix cứng
+        height: SCREEN_HEIGHT * 0.7, 
         backgroundColor: '#FFF', 
         borderTopLeftRadius: 20, 
         borderTopRightRadius: 20, 
         overflow: 'hidden',
-        // Shadow cho iOS/Android
         ...Platform.select({
             ios: { shadowColor: '#000', shadowOffset: { width: 0, height: -2 }, shadowOpacity: 0.1, shadowRadius: 5 },
             android: { elevation: 20 }
@@ -220,7 +212,6 @@ const styles = StyleSheet.create({
         flex: 1, 
         flexDirection: 'row' 
     },
-    // Sidebar: Cố định width 100 để không bị vỡ khi màn hình nhỏ
     traySidebar: { 
         width: 100, 
         backgroundColor: '#F7F9FC', 
@@ -268,7 +259,6 @@ const styles = StyleSheet.create({
         borderRadius: 3, 
         backgroundColor: '#FF5252' 
     },
-    // Content: Sử dụng flex: 1 để chiếm hết phần còn lại
     trayContent: { 
         flex: 1, 
         backgroundColor: '#FFF', 
@@ -341,7 +331,6 @@ const styles = StyleSheet.create({
         borderTopWidth: 1, 
         borderTopColor: '#EEE', 
         backgroundColor: '#FFF',
-        // Xử lý Safe Area cho iPhone dòng X trở lên
         paddingBottom: IS_IOS ? 34 : 16 
     },
     trayCompleteBtn: { 
