@@ -44,7 +44,7 @@ def get_user_profile_helper(firebase_id: str):
 async def get_all_foods():
     try:
         conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True) # Để kết quả trả về dạng { "DISH_NAME": "Cơm" ... }
+        cursor = conn.cursor(dictionary=True) 
         
         sql = "SELECT * FROM COOKED_FOOD WHERE DELETED_AT IS NULL"
         
@@ -60,9 +60,7 @@ async def get_all_foods():
         print(f"❌ Lỗi lấy món ăn: {e}")
         return {"success": False, "data": [], "error": str(e)}
     
-# ---------------------------------------------------------
 # 2. API NHẬN DIỆN ẢNH (YOLO)
-# ---------------------------------------------------------
 @router.post("/detect")
 async def detect_ingredients(file: UploadFile = File(...)):
     if not file.content_type.startswith("image/"):
@@ -74,15 +72,13 @@ async def detect_ingredients(file: UploadFile = File(...)):
         
         return {
             "success": True,
-            "ingredients": ingredients # Hoặc "foods": ingredients tùy frontend bạn gọi
+            "ingredients": ingredients
         }
     except Exception as e:
         print(f"❌ Lỗi nhận diện AI: {e}")
         raise HTTPException(status_code=500, detail=f"Lỗi xử lý hình ảnh: {str(e)}")
 
-# ---------------------------------------------------------
 # 3. API GỢI Ý MÓN ĂN TỪ NGUYÊN LIỆU (GEMINI JSON)
-# ---------------------------------------------------------
 class SuggestionRequest(BaseModel):
     firebase_id: str  
     ingredients: List[str]
@@ -109,20 +105,15 @@ async def suggest_food(request: SuggestionRequest):
         print(f"❌ Lỗi API suggest: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-# ---------------------------------------------------------
 # 4. API CHAT BOT (GEMINI TEXT) - ĐÃ CẬP NHẬT
-# ---------------------------------------------------------
 class ChatRequest(BaseModel):
-    firebase_id: str # <--- QUAN TRỌNG: Thêm trường này để Bot biết ai đang chat
+    firebase_id: str 
     message: str
 
 @router.post("/chat")
 async def chat_bot(request: ChatRequest):
     try:
-        # 1. Lấy profile để bot "khôn" hơn khi chat
         user_profile = get_user_profile_helper(request.firebase_id)
-
-        # 2. Gọi hàm chung với tham số user_message -> Trả về Text
         reply_text = interact_with_gemini(
             user_profile=user_profile, 
             user_message=request.message
