@@ -30,8 +30,8 @@ load_dotenv()
 class Settings:
     DB_HOST = os.getenv("DB_HOST", "localhost")
     DB_USER = os.getenv("DB_USER", "root")
-    DB_PASSWORD = os.getenv("DB_PASSWORD", "admin123")
-    DB_NAME = os.getenv("DB_NAME", "NutriNana")
+    DB_PASSWORD = os.getenv("DB_PASS", "admin123")
+    DB_NAME = os.getenv("DB_NAME", "defaultdb")
     DB_PORT = os.getenv("DB_PORT", "3306") 
 
     DB_CONFIG = {
